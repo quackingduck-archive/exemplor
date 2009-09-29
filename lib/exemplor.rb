@@ -4,13 +4,21 @@ require 'yaml'
 
 module Exemplor
   
+  class ExampleDefinitionError < StandardError ; end
+  
   class Builder
     
     def initialize(examples)
       @examples = examples
     end
     
-    def example(name, &body)
+    def example(name = nil, &body)
+      if name.nil?
+         file, line_number = caller.first.match(/^(.+):(\d+)/).captures
+         line = File.read(file).map[line_number.to_i - 1]
+         name = line[/^\s*eg\s*\{\s*(.+?)\s*\}\s*$/,1] if name.nil?
+         raise ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
+      end
       @examples.add_test(name, &body)
     end
     
