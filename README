@@ -1,0 +1,29 @@
+Examplor (the exemplar)
+=======================
+
+An example-based test framework inspired by [testy](http://github.com/ahoward/testy).
+
+Simpler that BDD/TDD, fancier than a file with a bunch of print statements.
+
+Very tiny api. Here it is
+    
+    Examples do
+      ... your helpers ...
+    end
+    
+    Examples "A group of examples" do 
+      
+      setup { ... setup codez ... }
+      
+      eg "an example" do
+        some_var = example_usage_of_your_lib
+        Check(some_var)
+      end
+      
+      eg "this example includes an assertion" do
+        Check(numerical_meaning_of_life).is(42)
+      end
+      
+    end
+
+The output is both human readable and machine parsable, which means you can test your tests.
