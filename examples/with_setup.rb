@@ -1,32 +1,20 @@
 require 'exemplor'
 
-Examples 'Array' do
   
-  setup { @array = [1, 2, 3] }
+eg.setup { @str = "foo" }
 
-  eg 'modified env' do
-    @array << 4
-    Check(@array).is([1,2,3,4])
-  end
-  
-  eg 'unmodified env' do
-    Check(@array).is([1,2,3])
-  end
+eg 'Modified env' do
+  @str << " bar"
+  Check(@str).is("foo bar")
+end
 
+eg 'Unmodified env' do
+  Check(@str).is("foo")
 end
 
 __END__
 
-Array - modified env: 
-  ok: 
-    "@array": 
-    - 1
-    - 2
-    - 3
-    - 4
-Array - unmodified env: 
-  ok: 
-    "@array": 
-    - 1
-    - 2
-    - 3
+(s) Modified env: 
+  (s) @str: foo bar
+(s) Unmodified env: 
+  (s) @str: foo

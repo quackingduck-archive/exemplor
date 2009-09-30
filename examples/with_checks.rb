@@ -1,20 +1,15 @@
 require 'exemplor'
 
-Examples 'Array' do
-
-  eg 'accessing different parts' do
-    list = [1, 2, 3]
-    Check(list.first)
-    Check(list[1])
-    Check(list.last)
-  end
-
+eg 'Accessing different parts of an array' do
+  list = [1, 2, 3]
+  Check(list.first)
+  Check(list[1])
+  Check(list.last)
 end
 
 __END__
 
-Array - accessing different parts: 
-  ok: 
-    list.first: 1
-    list[1]: 2
-    list.last: 3
+(I) Accessing different parts of an array: 
+  (i) list.first: 1
+  (i) list[1]: 2
+  (i) list.last: 3

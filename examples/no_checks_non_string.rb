@@ -6,15 +6,10 @@ class MyClass
   end
 end
 
-Examples 'MyClass' do
-
-  eg 'non-string return values get inspected' do
-    MyClass.new
-  end
-
+eg 'Non-string return values get inspected' do
+  MyClass.new
 end
 
 __END__
 
-MyClass - non-string return values get inspected: 
-  ok: <MyClass instance>
+(i) Non-string return values get inspected: <MyClass instance>

@@ -1,19 +1,14 @@
 require 'exemplor'
 
-Examples 'An Error' do
-
-  eg 'doing something wrong' do
-    raise "boom!"    
-  end
-
+eg 'Raising an error' do
+  raise "boom!"    
 end
 
 __END__
 
-An Error - doing something wrong: 
-  error: 
-    class: RuntimeError
-    message: boom!
-    backtrace: 
-    - newsamples/an_error.rb:6
-    # ... more backtrace lines
+(e) Raising an error: 
+  class: RuntimeError
+  message: boom!
+  backtrace: 
+  - examples/an_error.rb:4
+  # ... more backtrace lines

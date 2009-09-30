@@ -5,31 +5,7 @@ require 'yaml'
 module Exemplor
   
   class ExampleDefinitionError < StandardError ; end
-  
-  class Builder
     
-    def initialize(examples)
-      @examples = examples
-    end
-    
-    def example(name = nil, &body)
-      if name.nil?
-         file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-         line = File.read(file).map[line_number.to_i - 1]
-         name = line[/^\s*eg\s*\{\s*(.+?)\s*\}\s*$/,1] if name.nil?
-         raise ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
-      end
-      @examples.add_test(name, &body)
-    end
-    
-    def setup(&blk)
-      @examples.setup_block = blk
-    end
-    
-    alias_method :eg, :example
-    
-  end
-  
   class Check
     
     attr_reader :expectation, :value
@@ -51,13 +27,35 @@ module Exemplor
       @expectation = expectation
     end
     
+    def status
+      return :info if !@expectation
+      @value == @expectation ? :success : :failure
+    end
+    
+    def success?
+      status == :success
+    end
+    
     def failure?
-      @expectation && @value != @expectation
+      status == :failure
+    end
+    
+    def info?
+      status == :info
     end
     
   end
   
   class Example
+    
+    class << self
+      
+      alias_method :helpers, :class_eval
+      attr_accessor :setup_block
+      
+      def setup(&blk) self.setup_block = blk end
+      
+    end
     
     attr_accessor :_checks
     
@@ -80,29 +78,25 @@ module Exemplor
     
     attr_writer :setup_block
     
-    def initialize(name)
-      @name = name
+    def initialize
       @examples = OrderedHash.new
     end
     
-    def add_test(name, &body)
+    def add(name, &body)
       @examples[name] = body
     end
     
     def run(patterns)
       patterns = Regexp.new(patterns.join('|'))
       @examples.each do |name, body|
-        full_name = @name + ' - ' + name
-        print_yaml(full_name => run_example(body)) if full_name =~ patterns
+        status, out = run_example(body)
+        print_yaml("#{status_icon(status)} #{name}" => out) if name =~ patterns
       end
     end
     
     def list(patterns)
       patterns = Regexp.new(patterns.join('|'))
-      list = @examples.map do |name, body|
-        full_name = @name + ' - ' + name
-      end.
-      select { |full_name| full_name =~ patterns }
+      list = @examples.keys.select { |name| name =~ patterns }
       print_yaml list
     end
     
@@ -129,40 +123,46 @@ module Exemplor
     end
     
     def run_example(code)
+      status = :info
       env = Example.new
-      env.instance_eval(&@setup_block) if @setup_block
-      begin
+      out = begin
+        env.instance_eval(&Example.setup_block) if Example.setup_block
         value = env.instance_eval(&code)
-        env._checks.empty? ? render_value(value) : render_checks(env._checks)
+        if env._checks.empty?
+          render_value(value)
+        else
+          status = :infos if env._checks.all? { |check| check.info? }
+          status = :success if env._checks.all? { |check| check.success? }
+          status = :fail if env._checks.any? { |check| check.failure? }          
+          render_checks(env._checks)
+        end
       rescue Object => error
+        status = :error
         render_error(error)
-      end      
+      end
+      [status, out]
     end
     
     def render_value(value)
       out = case value
-        when String : value
-        #when Nil : 'null'
+        when String, Numeric : value
         else ; value.inspect ; end
-      { 'ok' => out }
     end
     
     def render_checks(checks)
       failure = nil
       out = OrderedHash.new
-      out['ok'] = OrderedHash.new
       checks.each do |check|
-         failure = check if check.failure?
-         break if failure
-         
-         out['ok'][check.name] = check.value
+        failure = check if check.failure?
+        break if failure
+       
+        out["#{status_icon(check.status)} #{check.name}"] = check.value
       end
       if failure
-        out['failure'] = { failure.name => OrderedHash.new }
-        out['failure'][failure.name]['expected'] = failure.expectation
-        out['failure'][failure.name]['actual'] = failure.value
+        fail_out = out["#{status_icon(failure.status)} #{failure.name}"] = OrderedHash.new
+        fail_out['expected'] = failure.expectation
+        fail_out['actual'] = failure.value
       end
-      out.delete('ok') if out['ok'].empty?
       out
     end
     
@@ -171,25 +171,41 @@ module Exemplor
       out['class'] = error.class.name
       out['message'] = error.message
       out['backtrace'] = error.backtrace
-      { 'error' => out }
+      out
+    end
+    
+    def status_icon(status)
+      status == :infos ? '(I)' : "(#{status.to_s.slice(0,1)})"      
+    end
+    
+  end
+  
+  class << self
+    
+    def examples
+      @examples ||= Examples.new
     end
     
   end
   
 end
 
-def Examples(name = nil, &test_block)
+def eg(name = nil, &example)
+  return Exemplor::Example if name.nil? && example.nil?
+  if name.nil?
+     file, line_number = caller.first.match(/^(.+):(\d+)/).captures
+     line = File.read(file).map[line_number.to_i - 1]
+     name = line[/^\s*eg\s*\{\s*(.+?)\s*\}\s*$/,1] if name.nil?
+     raise Exemplor::ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
+  end
+  Exemplor.examples.add(name, &example)
+end
+
+at_exit do
   args = ARGV.dup
-  if name.nil? # modify the example environment
-    Exemplor::Example.class_eval(&test_block)
-  else # define some examples
-    examples = Exemplor::Examples.new(name)
-    Exemplor::Builder.new(examples).instance_eval(&test_block)
-    
-    if args.delete('--list') || args.delete('-l')
-      examples.list(args)
-    else
-      examples.run(args)
-    end
+  if args.delete('--list') || args.delete('-l')
+    Exemplor.examples.list(args)
+  else
+    Exemplor.examples.run(args)
   end
 end

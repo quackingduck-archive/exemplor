@@ -1,14 +1,9 @@
 require 'exemplor'
 
-Examples 'No checks' do
-
-  eg 'a test block without checks succeeds and prints its value' do
-    "foo"
-  end
-
+eg 'An example block without any checks prints the value of the block' do
+  "foo"
 end
 
 __END__
 
-No checks - a test block without checks succeeds and prints its value: 
-  ok: foo
+(i) An example block without any checks prints the value of the block: foo

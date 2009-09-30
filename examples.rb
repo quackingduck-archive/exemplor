@@ -26,9 +26,11 @@ end
 Examples "Exemplor" do
 
   eg "errors are caught and nicely displayed" do
-    # the output here can't really be checked against the expected as the 
-    # backtrace will look slightly different on each platform
-    run_example(:an_error)
+    actual_yaml = YAML.load run_example(:an_error)
+    error_hash = actual_yaml[actual_yaml.keys.first]
+     # the rest of the bactrace is platform & exemplor version specific
+    error_hash['backtrace'] = error_hash['backtrace'][0...1]
+    Check(actual_yaml).is(YAML.load(extract_expected(:an_error)))
   end
   
   eg { check_output_matches_expected_for :no_checks }
@@ -39,28 +41,22 @@ Examples "Exemplor" do
   eg { check_output_matches_expected_for :assertion_success }
   eg { check_output_matches_expected_for :assertion_failure }
   eg { check_output_matches_expected_for :assertion_success_and_failure }
-  eg { check_output_matches_expected_for :helpers_with_block }
+  eg { check_output_matches_expected_for :helpers }
   eg { check_output_matches_expected_for :with_setup }
   
   eg "called with --list arg" do
     list = YAML.load(run_example(:with_setup, '--list'))
-    Check(list).is(["Array - modified env", "Array - unmodified env"])
+    Check(list).is(["Modified env", "Unmodified env"])
   end
   
   eg "called with --l arg" do
     list = YAML.load(run_example(:with_setup, '--list'))
-    Check(list).is(["Array - modified env", "Array - unmodified env"])
+    Check(list).is(["Modified env", "Unmodified env"])
   end
   
   eg "called with some other arg (always interpreted as a regex)" do
-    run_example(:with_setup, 'unmod')
-    tests_run = YAML.load(run_example(:with_setup, 'unmod')).size
+    tests_run = YAML.load(run_example(:with_setup, 'Unmodified')).size
     Check(tests_run).is(1)
-  end
-  
-  eg "multiple example groups" do
-    list = YAML.load(run_example(:multiple_groups, '--list'))
-    Check(list).is(['A - test','B - test','C - test'])
   end
   
 end

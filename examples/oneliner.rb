@@ -1,10 +1,7 @@
 require 'exemplor'
 
-Examples 'One liner' do
-  eg { "foo" }
-end
+eg { 1+2 }
 
 __END__
 
-One liner - "foo": 
-  ok: foo
+(i) 1+2: 3
