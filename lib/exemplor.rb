@@ -106,16 +106,19 @@ module Exemplor
       print(out)
     end
     
+    # hacky
     def colorize(out)
       require 'term/ansicolor'
       out.split("\n").map do |line|
         case line
-        when /^  ok/ 
-          "#{Term::ANSIColor.reset}#{line}#{Term::ANSIColor.green}"
-        when /^  (failure|error)/
-          "#{line}#{Term::ANSIColor.reset}#{Term::ANSIColor.red}"
-        when /^[^\s]/
-          "#{Term::ANSIColor.reset}#{line}"
+        when /^(?:\s{2})?(\(s\))/ 
+          line.sub($1, Term::ANSIColor.green{$1})
+        when /^(?:\s{2})?(\(f\))/ 
+          line.sub($1, Term::ANSIColor.red{$1})
+        when /^(?:\s{2})?(\(e\))/ 
+          line.sub($1, Term::ANSIColor.red{$1})
+        when /^(?:\s{2})?(\(i\))/i
+          line.sub($1, Term::ANSIColor.blue{$1})
         else          
           line
         end
@@ -174,8 +177,8 @@ module Exemplor
       out
     end
     
-    def status_icon(status)
-      status == :infos ? '(I)' : "(#{status.to_s.slice(0,1)})"      
+    def status_icon(status)      
+      icon = status == :infos ? '(I)' : "(#{status.to_s.slice(0,1)})"
     end
     
   end
