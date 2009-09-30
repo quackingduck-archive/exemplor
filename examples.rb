@@ -1,5 +1,6 @@
 # TODO: switch to gem version
-require 'lib/exemplor'
+require 'exemplor'
+# require 'lib/exemplor'
 
 Examples do
 
@@ -12,7 +13,7 @@ Examples do
   end
   
   def expected_and_actual(example_name)
-    [run_example(example_name).strip, extract_expected(example_name).strip]
+    [extract_expected(example_name).strip, run_example(example_name).strip]
   end
   
   def check_output_matches_expected_for(example_name)
