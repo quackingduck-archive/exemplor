@@ -1,6 +1,8 @@
 # TODO: switch to gem version
 require 'lib/exemplor'
 
+# slow because each test runs in a subshell
+
 eg.helpers do
 
   def run_example(name, args = nil)

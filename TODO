@@ -1,2 +1,6 @@
 * support multiple groups
 * #teardown
+* Use fancy unicode characters for tests status:
+# ‣
+# ✓
+# ✗
