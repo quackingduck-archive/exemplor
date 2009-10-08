@@ -63,6 +63,9 @@ module Exemplor
       @_checks = []
     end
     
+    # fragile. doesnt work with calls like
+    # Check(get('/'))
+    # Check foo
     def Check(value)
       file, line_number = caller.first.match(/^(.+):(\d+)/).captures
       line = File.read(file).map[line_number.to_i - 1]
@@ -112,17 +115,21 @@ module Exemplor
       out.split("\n").map do |line|
         case line
         when /^(?:\s{2})?(\(s\))/ 
-          line.sub($1, Term::ANSIColor.green{$1})
+          start_color(line, :green)
         when /^(?:\s{2})?(\(f\))/ 
-          line.sub($1, Term::ANSIColor.red{$1})
+          start_color(line, :red)
         when /^(?:\s{2})?(\(e\))/ 
-          line.sub($1, Term::ANSIColor.red{$1})
+          start_color(line, :red)
         when /^(?:\s{2})?(\(i\))/i
-          line.sub($1, Term::ANSIColor.blue{$1})
+          start_color(line, :blue)
         else          
           line
         end
       end.join("\n") + "\n#{Term::ANSIColor.reset}"
+    end
+    
+    def start_color(line, color)
+      "#{Term::ANSIColor.reset}#{Term::ANSIColor.send(color)}#{line}"
     end
     
     def run_example(code)
