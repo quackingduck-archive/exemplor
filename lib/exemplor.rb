@@ -90,10 +90,13 @@ module Exemplor
     end
     
     def run(patterns)
+      # unoffically supports multiple patterns
       patterns = Regexp.new(patterns.join('|'))
       @examples.each do |name, body|
-        status, out = run_example(body)
-        print_yaml("#{status_icon(status)} #{name}" => out) if name =~ patterns
+        if name =~ patterns
+          status, out = run_example(body)
+          print_yaml("#{status_icon(status)} #{name}" => out)
+        end
       end
     end
     
