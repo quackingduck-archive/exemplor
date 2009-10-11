@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
      "README",
      "Rakefile",
      "TODO",
+     "VERSION",
      "examples.rb",
      "examples/an_error.rb",
      "examples/assertion_failure.rb",
