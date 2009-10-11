@@ -7,23 +7,146 @@ Simpler that BDD/TDD, fancier than a file with a bunch of print statements.
 
 Very tiny api. Here it is
     
-    Examples do
+    eg.helpers do
       ... your helpers ...
     end
     
-    Examples "A group of examples" do 
+    eg.setup { ... setup codez ... }
       
-      setup { ... setup codez ... }
-      
-      eg "an example" do
-        some_var = example_usage_of_your_lib
-        Check(some_var)
-      end
-      
-      eg "this example includes an assertion" do
-        Check(numerical_meaning_of_life).is(42)
-      end
-      
+    eg "an example" do
+      ... example code ...
     end
+    
+    eg "another example" do
+      ... etc ...
+    end                                      
 
 The output is both human readable and machine parsable, which means you can test your tests.
+
+Writing Examples
+----------------
+
+See `examples.rb` and `/examples` for more examples.
+
+The simplest possible example:
+                                
+    eg 'An example block without any checks prints the value of the block' do
+      "foo"
+    end
+    
+    #=>
+    
+    (i) An example block without any checks prints the value of the block: foo
+
+The 'i' stands for 'info' which means the example ran without error.
+
+Inspecting a few values, by default `Check` prints it's argument and the value of the argument:
+                                
+    eg 'Accessing different parts of an array' do
+      list = [1, 2, 3]
+      Check(list.first)
+      Check(list[1])
+      Check(list.last)
+    end
+    
+    #=>
+    
+    (I) Accessing different parts of an array: 
+      (i) list.first: 1
+      (i) list[1]: 2
+      (i) list.last: 3
+
+The capital 'I' means all checks were 'info' checks.
+
+Call's to `Check` with the same argument can be disambiguated with `[]`:
+
+    eg 'Array appending' do
+      list = [1, 42]
+      Check(list.last)["before append"]
+      list << 2
+      Check(list.last)["after append"]
+    end
+    
+    #=>
+    
+    (I) Array appending: 
+      (i) list.last before append: 42
+      (i) list.last after append: 2
+
+Errors are caught and reported nicely:
+    
+    eg 'Raising an error' do
+      raise "boom!"    
+    end
+
+    #=>
+
+    (e) Raising an error: 
+      class: RuntimeError
+      message: boom!
+      backtrace: 
+      - examples/an_error.rb:4
+      # ... more backtrace lines
+
+Once you're happy with how your code is running you can make some assertions about its behaviour by adding `is()` calls after your `Check()` statements:
+    
+    
+    eg 'Asserting first is first' do
+      list = [1, 2, 3]
+      Check(list.first).is(1)
+    end
+
+    #=>
+
+    (s) Asserting first is first: 
+      (s) list.first: 1
+
+'s' stands for 'success' and 'f' for failure:
+
+    eg 'Assertion failure' do
+      list = [1, 2, 3]
+      Check(list.first).is(2)
+    end
+
+    #=>
+
+    (f) Assertion failure: 
+      (f) list.first: 
+        expected: 2
+        actual: 1
+
+
+Running Examples
+----------------
+
+Running with `--list` or `-l` lists all examples:
+
+    $> ruby examples.rb -l
+    - errors are caught and nicely displayed
+    - check_output_matches_expected_for :no_checks
+    - check_output_matches_expected_for :oneliner
+    - check_output_matches_expected_for :no_checks_non_string
+    - check_output_matches_expected_for :with_checks
+    - check_output_matches_expected_for :check_with_disambiguation
+    - check_output_matches_expected_for :assertion_success
+    - check_output_matches_expected_for :assertion_failure
+    - check_output_matches_expected_for :assertion_success_and_failure
+    - check_output_matches_expected_for :helpers
+    - check_output_matches_expected_for :with_setup
+    - called with --list arg
+    - called with --l arg
+    - called with some other arg (always interpreted as a regex)
+
+Otherwise the first argument is taken as a regex and only examples who's titles match are run:
+    
+    $> ruby examples.rb called
+    (s) called with --list arg: 
+      (s) list: 
+      - Modified env
+      - Unmodified env
+    (s) called with --l arg: 
+      (s) list: 
+      - Modified env
+      - Unmodified env
+    (s) called with some other arg (always interpreted as a regex): 
+      (s) tests_run: 1
