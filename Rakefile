@@ -10,6 +10,7 @@ begin
     gs.email    = "myles@myles.id.au"
     gs.authors  = ["Myles Byrne"]
   end
+  Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Install jeweler to build gem"
 end
