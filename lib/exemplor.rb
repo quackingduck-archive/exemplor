@@ -159,7 +159,11 @@ module Exemplor
     def render_value(value)
       out = case value
         when String, Numeric : value
-        else ; value.inspect ; end
+        else 
+          str = value.inspect
+          # cheap hack for better looking printing with haml
+          str =~ /^#/ ? str[1..-1] : str
+        end
     end
     
     def render_checks(checks)
