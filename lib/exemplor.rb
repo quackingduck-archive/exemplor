@@ -4,6 +4,8 @@ require 'yaml'
 
 module Exemplor
   
+  def self.version() File.read(__FILE__.sub('lib/exemplor.rb','VERSION')) end
+  
   class ExampleDefinitionError < StandardError ; end
     
   class Check

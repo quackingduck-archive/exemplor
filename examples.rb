@@ -24,6 +24,10 @@ eg.helpers do
 
 end
 
+eg "version matches file" do
+  Check(Exemplor.version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
+end
+
 eg "errors are caught and nicely displayed" do
   actual_yaml = YAML.load run_example(:an_error)
   error_hash = actual_yaml[actual_yaml.keys.first]
