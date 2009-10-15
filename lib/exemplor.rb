@@ -142,7 +142,7 @@ module Exemplor
         env.instance_eval(&Example.setup_block) if Example.setup_block
         value = env.instance_eval(&code)
         if env._checks.empty?
-          render_value(value)
+          value
         else
           status = :infos if env._checks.all? { |check| check.info? }
           status = :success if env._checks.all? { |check| check.success? }
@@ -154,16 +154,6 @@ module Exemplor
         render_error(error)
       end
       [status, out]
-    end
-    
-    def render_value(value)
-      out = case value
-        when String, Numeric : value
-        else 
-          str = value.inspect
-          # cheap hack for better looking printing with haml
-          str =~ /^#/ ? str[1..-1] : str
-        end
     end
     
     def render_checks(checks)
