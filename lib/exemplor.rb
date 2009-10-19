@@ -30,7 +30,7 @@ module Exemplor
     end
     
     def status
-      return :info if !@expectation
+      return :info unless defined? @expectation
       @value == @expectation ? :success : :failure
     end
     
