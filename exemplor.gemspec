@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{exemplor}
-  s.version = "2.5.0"
+  s.version = "2.6.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Myles Byrne"]
@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
      "examples/assertion_success_and_failure.rb",
      "examples/check_with_disambiguation.rb",
      "examples/checking_nil.rb",
+     "examples/dumping_classes.rb",
      "examples/helpers.rb",
      "examples/no_checks.rb",
      "examples/no_checks_non_string.rb",
@@ -48,6 +49,7 @@ Gem::Specification.new do |s|
      "examples/assertion_success_and_failure.rb",
      "examples/check_with_disambiguation.rb",
      "examples/checking_nil.rb",
+     "examples/dumping_classes.rb",
      "examples/helpers.rb",
      "examples/no_checks.rb",
      "examples/no_checks_non_string.rb",
