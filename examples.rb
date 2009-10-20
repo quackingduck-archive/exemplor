@@ -47,6 +47,7 @@ eg { check_output_matches_expected_for :assertion_success_and_failure }
 eg { check_output_matches_expected_for :helpers }
 eg { check_output_matches_expected_for :with_setup }
 eg { check_output_matches_expected_for :checking_nil }
+eg { check_output_matches_expected_for :dumping_classes }
 
 eg "called with --list arg" do
   list = YAML.load(run_example(:with_setup, '--list'))

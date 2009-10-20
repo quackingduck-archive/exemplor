@@ -144,7 +144,7 @@ module Exemplor
         env.instance_eval(&Example.setup_block) if Example.setup_block
         value = env.instance_eval(&code)
         if env._checks.empty?
-          value
+          render_value value
         else
           status = :infos if env._checks.all? { |check| check.info? }
           status = :success if env._checks.all? { |check| check.success? }
@@ -165,12 +165,12 @@ module Exemplor
         failure = check if check.failure?
         break if failure
        
-        out["#{status_icon(check.status)} #{check.name}"] = check.value
+        out["#{status_icon(check.status)} #{check.name}"] = render_value check.value
       end
       if failure
         fail_out = out["#{status_icon(failure.status)} #{failure.name}"] = OrderedHash.new
         fail_out['expected'] = failure.expectation
-        fail_out['actual'] = failure.value
+        fail_out['actual'] = render_value failure.value
       end
       out
     end
@@ -185,6 +185,11 @@ module Exemplor
     
     def status_icon(status)      
       icon = status == :infos ? '(I)' : "(#{status.to_s.slice(0,1)})"
+    end
+    
+    # yaml doesn't want to print a class
+    def render_value(value)
+      value.kind_of?(Class) ? value.inspect : value
     end
     
   end
