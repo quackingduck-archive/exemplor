@@ -1,4 +1,4 @@
-* Check(nil).is(nil) should work
+* eg { Check(1+2+(3)) } should work (problems with matching the last brace)
 * exemplor binary that can run multiple example files
 * #teardown
 * Use fancy unicode characters for tests status:
