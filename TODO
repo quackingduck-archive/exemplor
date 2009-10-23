@@ -1,4 +1,4 @@
-* exemplor binary that can run multiple example files
+* exemplor executable that can run multiple example files
 * #teardown
 * Use fancy unicode characters for tests status:
 # (i) = ∙
