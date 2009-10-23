@@ -1,10 +1,16 @@
 require 'exemplor'
 
-eg "checking for nil works correctly" do
+eg "checking nil works correctly" do
+  Check(nil)
+end
+
+eg "asserting for nil works correctly" do
   Check(nil).is(nil)
 end
 
 __END__
 
-(s) checking for nil works correctly: 
-  (s) nil:
+(I) checking nil works correctly: 
+  (i) nil: 
+(s) asserting for nil works correctly: 
+  (s) nil: 
