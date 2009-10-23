@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{exemplor}
-  s.version = "2.6.0"
+  s.version = "2.7.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Myles Byrne"]
-  s.date = %q{2009-10-20}
+  s.date = %q{2009-10-23}
   s.email = %q{myles@myles.id.au}
   s.extra_rdoc_files = [
     "README"
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
      "examples/assertion_failure.rb",
      "examples/assertion_success.rb",
      "examples/assertion_success_and_failure.rb",
+     "examples/check_parsing.rb",
      "examples/check_with_disambiguation.rb",
      "examples/checking_nil.rb",
      "examples/dumping_classes.rb",
@@ -47,6 +48,7 @@ Gem::Specification.new do |s|
      "examples/assertion_failure.rb",
      "examples/assertion_success.rb",
      "examples/assertion_success_and_failure.rb",
+     "examples/check_parsing.rb",
      "examples/check_with_disambiguation.rb",
      "examples/checking_nil.rb",
      "examples/dumping_classes.rb",
