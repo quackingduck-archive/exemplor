@@ -71,7 +71,7 @@ module Exemplor
     def Check(value)
       file, line_number = caller.first.match(/^(.+):(\d+)/).captures
       line = File.read(file).map[line_number.to_i - 1]
-      name = line[/Check\((.+?)\)($|\.is.+)/,1]
+      name = line[/Check\((.+?)\)($|\.is.+|\[[^\]]+\])/,1]
       check = Check.new(name, value)
       _checks << check
       check
