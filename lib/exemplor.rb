@@ -65,7 +65,7 @@ module Exemplor
       @_checks = []
     end
     
-    # fragile. doesnt work with calls like
+    # fragile. doesn't work with calls like
     # Check(get('/'))
     # Check foo
     def Check(value)
