@@ -92,14 +92,17 @@ module Exemplor
     end
     
     def run(patterns)
+      all_good = true
       # unoffically supports multiple patterns
       patterns = Regexp.new(patterns.join('|'))
       @examples.each do |name, body|
         if name =~ patterns
           status, out = run_example(body)
           print_yaml("#{status_icon(status)} #{name}" => out)
+          all_good = all_good && status != :error && status != :fail #See comment on :fail elsewhere
         end
       end
+      all_good
     end
     
     def list(patterns)
@@ -146,9 +149,9 @@ module Exemplor
         if env._checks.empty?
           render_value value
         else
-          status = :infos if env._checks.all? { |check| check.info? }
+          status = :infos if env._checks.all? { |check| check.info? } #Is this meant to be plural?
           status = :success if env._checks.all? { |check| check.success? }
-          status = :fail if env._checks.any? { |check| check.failure? }          
+          status = :fail if env._checks.any? { |check| check.failure? } #Is this meant to be :fail rather than :failure?
           render_checks(env._checks)
         end
       rescue Object => error
@@ -220,6 +223,6 @@ at_exit do
   if args.delete('--list') || args.delete('-l')
     Exemplor.examples.list(args)
   else
-    Exemplor.examples.run(args)
+    exit Exemplor.examples.run(args)
   end
 end
