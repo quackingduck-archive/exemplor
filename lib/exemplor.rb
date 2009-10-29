@@ -96,8 +96,9 @@ module Exemplor
       patterns = Regexp.new(patterns.join('|'))
       @examples.each do |name, body|
         if name =~ patterns
-          status, out = run_example(body)
+          status, out, stderr = run_example(body)
           print_yaml("#{status_icon(status)} #{name}" => out)
+          print_stderr stderr
         end
       end
     end
@@ -114,6 +115,12 @@ module Exemplor
       print(out)
     end
     
+    def print_stderr(stderr)
+      unless stderr.empty?
+        $stdout.tty? ? $stdout.puts("#{Term::ANSIColor.reset}(STDERR):\n#{stderr}") : $stderr.puts(stderr)
+      end
+    end
+    
     # hacky
     def colorize(out)
       require 'term/ansicolor'
@@ -127,7 +134,7 @@ module Exemplor
           start_color(line, :red)
         when /^(?:\s{2})?(\(i\))/i
           start_color(line, :blue)
-        else          
+        else
           line
         end
       end.join("\n") + "\n#{Term::ANSIColor.reset}"
@@ -140,7 +147,11 @@ module Exemplor
     def run_example(code)
       status = :info
       env = Example.new
+      stderr = StringIO.new
       out = begin
+        real_stderr = $stderr
+        $stderr = stderr
+        
         env.instance_eval(&Example.setup_block) if Example.setup_block
         value = env.instance_eval(&code)
         if env._checks.empty?
@@ -154,8 +165,10 @@ module Exemplor
       rescue Object => error
         status = :error
         render_error(error)
+      ensure
+        $stderr = real_stderr
       end
-      [status, out]
+      [status, out, stderr.rewind && stderr.read]
     end
     
     def render_checks(checks)
