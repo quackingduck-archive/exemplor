@@ -25,7 +25,8 @@ eg.helpers do
 end
 
 eg "version matches file" do
-  Check(Exemplor.version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
+  version = `ruby -Ilib -e "require 'exemplor' ; print Exemplor.version"`
+  Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
 end
 
 eg "errors are caught and nicely displayed" do
