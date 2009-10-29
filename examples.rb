@@ -1,5 +1,5 @@
-# TODO: switch to gem version
-require 'lib/exemplor'
+# uses the gem version, not the one being tested
+require 'exemplor'
 
 # slow because each test runs in a subshell
 
