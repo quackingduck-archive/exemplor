@@ -1,6 +1,5 @@
 require 'exemplor'
 
-  
 eg.setup { @str = "foo" }
 
 eg 'Modified env' do

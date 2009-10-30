@@ -24,6 +24,10 @@ eg "with brackets and is" do
   Check(String.new('test')).is("test")
 end
 
+eg "with disambiguation" do
+  Check(foo)['bar'].is('bar')
+end
+
 __END__
 
 (I) plain call: 
@@ -36,3 +40,5 @@ __END__
   (i) String.new('test'): test
 (s) with brackets and is: 
   (s) String.new('test'): test
+(s) with disambiguation: 
+  (s) foo bar: bar

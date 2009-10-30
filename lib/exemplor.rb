@@ -19,6 +19,7 @@ module Exemplor
     
     def [](disambiguate)
       @disambiguate = disambiguate
+      self
     end
     
     def name
