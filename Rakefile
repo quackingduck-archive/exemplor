@@ -13,3 +13,9 @@ begin
 rescue LoadError
   puts "Install jeweler to build gem"
 end
+
+task :examples do
+  exec "ruby examples.rb"
+end
+
+task :test => :examples
