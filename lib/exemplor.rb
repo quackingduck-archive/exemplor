@@ -23,7 +23,7 @@ module Exemplor
     end
     
     def name
-      @name + (@disambiguate ? " #{@disambiguate}" : '')
+      @name + (defined?(@disambiguate) ? " #{@disambiguate}" : '')
     end
     
     def is(expectation)
