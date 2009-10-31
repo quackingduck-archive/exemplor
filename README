@@ -40,7 +40,7 @@ The simplest possible example:
 
 The 'i' stands for 'info' which means the example ran without error.
 
-Inspecting a few values, by default `Check` prints it's argument and the value of the argument:
+Inspecting a few values, by default `Check` prints its argument and the value of the argument:
                                 
     eg 'Accessing different parts of an array' do
       list = [1, 2, 3]
@@ -58,7 +58,7 @@ Inspecting a few values, by default `Check` prints it's argument and the value o
 
 The capital 'I' means all checks were 'info' checks.
 
-Call's to `Check` with the same argument can be disambiguated with `[]`:
+Calls to `Check` with the same argument can be disambiguated with `[]`:
 
     eg 'Array appending' do
       list = [1, 42]
@@ -137,7 +137,7 @@ Running with `--list` or `-l` lists all examples:
     - called with --l arg
     - called with some other arg (always interpreted as a regex)
 
-Otherwise the first argument is taken as a regex and only examples who's titles match are run:
+Otherwise the first argument is taken as a regex and only examples whose titles match are run:
     
     $> ruby examples.rb called
     (s) called with --list arg: 

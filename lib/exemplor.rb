@@ -66,12 +66,9 @@ module Exemplor
       @_checks = []
     end
     
-    # fragile. doesnt work with calls like
-    # Check(get('/'))
-    # Check foo
     def Check(value)
       file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-      line = File.read(file).map[line_number.to_i - 1]
+      line = File.readlines(file)[line_number.to_i - 1].strip
       name = line[/Check\((.+?)\)\s*($|#|\[|\.is.+)/,1]
       check = Check.new(name, value)
       _checks << check
@@ -93,6 +90,7 @@ module Exemplor
     end
     
     def run(patterns)
+      fails = 0
       # unoffically supports multiple patterns
       patterns = Regexp.new(patterns.join('|'))
       @examples.each do |name, body|
@@ -100,8 +98,10 @@ module Exemplor
           status, out, stderr = run_example(body)
           print_yaml("#{status_icon(status)} #{name}" => out)
           print_stderr stderr
+          all_good = all_good && status != :error && status != :failure
         end
       end
+      all_good
     end
     
     def list(patterns)
@@ -160,7 +160,7 @@ module Exemplor
         else
           status = :infos if env._checks.all? { |check| check.info? }
           status = :success if env._checks.all? { |check| check.success? }
-          status = :fail if env._checks.any? { |check| check.failure? }          
+          status = :failure if env._checks.any? { |check| check.failure? } 
           render_checks(env._checks)
         end
       rescue Object => error
@@ -222,7 +222,7 @@ def eg(name = nil, &example)
   return Exemplor::Example if name.nil? && example.nil?
   if name.nil?
      file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-     line = File.read(file).map[line_number.to_i - 1]
+     line = File.read(file).split("\n", -1)[line_number.to_i - 1]
      name = line[/^\s*eg\s*\{\s*(.+?)\s*\}\s*$/,1] if name.nil?
      raise Exemplor::ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
   end
@@ -234,6 +234,6 @@ at_exit do
   if args.delete('--list') || args.delete('-l')
     Exemplor.examples.list(args)
   else
-    Exemplor.examples.run(args)
+    exit Exemplor.examples.run(args)
   end
 end
