@@ -93,15 +93,14 @@ module Exemplor
       fails = 0
       # unoffically supports multiple patterns
       patterns = Regexp.new(patterns.join('|'))
-      @examples.each do |name, body|
-        if name =~ patterns
-          status, out, stderr = run_example(body)
-          print_yaml("#{status_icon(status)} #{name}" => out)
-          print_stderr stderr
-          all_good = all_good && status != :error && status != :failure
-        end
+      examples_to_run = @examples.select { |name,_| name =~ patterns }
+      examples_to_run.each do |name, body|
+        status, out, stderr = run_example(body)
+        print_yaml("#{status_icon(status)} #{name}" => out)
+        print_stderr stderr
+        fails +=1 if [:error,:failure].include?(status)
       end
-      all_good
+      (fails.to_f/examples_to_run.size)*100
     end
     
     def list(patterns)
@@ -222,8 +221,8 @@ def eg(name = nil, &example)
   return Exemplor::Example if name.nil? && example.nil?
   if name.nil?
      file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-     line = File.read(file).split("\n", -1)[line_number.to_i - 1]
-     name = line[/^\s*eg\s*\{\s*(.+?)\s*\}\s*$/,1] if name.nil?
+     line = File.readlines(file)[line_number.to_i - 1].strip
+     name = line[/^eg\s*\{\s*(.+?)\s*\}$/,1] if name.nil?
      raise Exemplor::ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
   end
   Exemplor.examples.add(name, &example)
