@@ -1,4 +1,3 @@
-require 'rubygems' # TODO: remove
 require 'orderedhash'
 require 'yaml'
 
@@ -94,6 +93,7 @@ module Exemplor
       # unoffically supports multiple patterns
       patterns = Regexp.new(patterns.join('|'))
       examples_to_run = @examples.select { |name,_| name =~ patterns }
+      return 0 if examples_to_run.empty?
       examples_to_run.each do |name, body|
         status, out, stderr = run_example(body)
         print_yaml("#{status_icon(status)} #{name}" => out)

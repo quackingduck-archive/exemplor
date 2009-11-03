@@ -53,7 +53,7 @@ eg { check_output_matches_expected_for :check_parsing }
 
 eg "exit status is percent of issues that failed or errored" do
   run_example :ten_percent_failures
-  Check($?.to_i).is(10)
+  Check($?.exitstatus).is(10)
 end
 
 eg "called with --list arg" do
