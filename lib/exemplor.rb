@@ -257,6 +257,16 @@ module Exemplor
       @examples ||= Examples.new
     end
     
+    def extract_example_file(caller_trace)
+      @example_file ||= caller_trace.first.split(":").first
+    end
+    
+    # attr_reader :example_file
+    
+    def run_directly?
+      @example_file == $0
+    end
+    
   end
   
 end
@@ -265,6 +275,7 @@ end
 # Examples.examples ordered hash, the key is the name, the body is the example
 # code
 def eg(name = nil, &example)
+  Exemplor.extract_example_file caller # only runs once
   return Exemplor::ExampleEnv if name.nil? && example.nil?
   if name.nil?
      file, line_number = caller.first.match(/^(.+):(\d+)/).captures
@@ -277,10 +288,12 @@ end
 
 # Parses the command line args and either runs or lists the examples.
 at_exit do
-  args = ARGV.dup
-  if args.delete('--list') || args.delete('-l')
-    Exemplor.examples.list(args)
-  else
-    exit Exemplor.examples.run(args)
+  if Exemplor.run_directly?
+    args = ARGV.dup
+    if args.delete('--list') || args.delete('-l')
+      Exemplor.examples.list(args)
+    else
+      exit Exemplor.examples.run(args)
+    end
   end
-end
+end 
