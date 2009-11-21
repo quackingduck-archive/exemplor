@@ -10,7 +10,15 @@ end
 
 __END__
 
-(I) checking nil works correctly: 
-  (i) nil: 
-(s) asserting for nil works correctly: 
-  (s) nil: 
+- name: checking nil works correctly
+  status: info (with checks)
+  result: 
+  - name: nil
+    status: info
+    result: 
+- name: asserting for nil works correctly
+  status: success
+  result: 
+  - name: nil
+    status: success
+    result:

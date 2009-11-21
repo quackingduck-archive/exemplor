@@ -30,11 +30,11 @@ eg "version matches file" do
 end
 
 eg "errors are caught and nicely displayed" do
-  actual_yaml = YAML.load run_example(:an_error)
-  error_hash = actual_yaml[actual_yaml.keys.first]
-   # the rest of the bactrace is platform & exemplor version specific
-  error_hash['backtrace'] = error_hash['backtrace'][0...1]
-  Check(actual_yaml).is(YAML.load(extract_expected(:an_error)))
+  result = YAML.load(run_example(:an_error))[0]
+  Check(result['status']).is('error')
+  Check(result['result']['class']).is('RuntimeError')
+  Check(result['result']['message']).is('boom!')
+  Check(result['result']['backtrace'][0]).is('examples/an_error.rb:4')
 end
 
 eg { check_output_matches_expected_for :no_checks }

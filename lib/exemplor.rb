@@ -76,6 +76,32 @@ module Exemplor
     
   end
   
+  class Result
+    
+    attr_accessor :name,:status,:result,:stderr
+    
+    def initialize(name,status,result,stderr)
+      @name,@status,@result,@stderr = name,status,result,stderr
+    end
+    
+    def failure?
+      [:error,:failure].include?(self.status)
+    end
+    
+    def print_yaml
+      hsh = OrderedHash.new
+      hsh['name'] = self.name
+      hsh['status'] = case status = self.status
+        when :info  : 'info (no checks)'
+        when :infos : 'info (with checks)'
+        else ; status.to_s
+      end
+      hsh['result'] = self.result
+      puts [hsh].to_yaml.match(/^--- \n/).post_match # prints an array
+    end
+    
+  end
+  
   class Examples
     
     attr_writer :setup_block
@@ -95,10 +121,9 @@ module Exemplor
       examples_to_run = @examples.select { |name,_| name =~ patterns }
       return 0 if examples_to_run.empty?
       examples_to_run.each do |name, body|
-        status, out, stderr = run_example(body)
-        print_yaml("#{status_icon(status)} #{name}" => out)
-        print_stderr stderr
-        fails +=1 if [:error,:failure].include?(status)
+        result = Result.new(name, *run_example(body))
+        fails +=1 if result.failure?
+        result.print_yaml
       end
       (fails.to_f/examples_to_run.size)*100
     end
@@ -111,39 +136,9 @@ module Exemplor
     
     def print_yaml(obj)
       out = obj.to_yaml.match(/^--- \n/).post_match
-      out = colorize out if $stdout.tty?
       print(out)
     end
-    
-    def print_stderr(stderr)
-      unless stderr.empty?
-        $stdout.tty? ? $stdout.puts("#{Term::ANSIColor.reset}(STDERR):\n#{stderr}") : $stderr.puts(stderr)
-      end
-    end
-    
-    # hacky
-    def colorize(out)
-      require 'term/ansicolor'
-      out.split("\n").map do |line|
-        case line
-        when /^(?:\s{2})?(\(s\))/ 
-          start_color(line, :green)
-        when /^(?:\s{2})?(\(f\))/ 
-          start_color(line, :red)
-        when /^(?:\s{2})?(\(e\))/ 
-          start_color(line, :red)
-        when /^(?:\s{2})?(\(i\))/i
-          start_color(line, :blue)
-        else
-          line
-        end
-      end.join("\n") + "\n#{Term::ANSIColor.reset}"
-    end
-    
-    def start_color(line, color)
-      "#{Term::ANSIColor.reset}#{Term::ANSIColor.send(color)}#{line}"
-    end
-    
+        
     def run_example(code)
       status = :info
       env = Example.new
@@ -173,17 +168,23 @@ module Exemplor
     
     def render_checks(checks)
       failure = nil
-      out = OrderedHash.new
+      out = []
       checks.each do |check|
         failure = check if check.failure?
         break if failure
-       
-        out["#{status_icon(check.status)} #{check.name}"] = render_value check.value
+        out << ohsh do |o|
+          o['name'] = check.name
+          o['status'] = check.status.to_s
+          o['result'] = render_value check.value
+        end
       end
       if failure
-        fail_out = out["#{status_icon(failure.status)} #{failure.name}"] = OrderedHash.new
-        fail_out['expected'] = failure.expectation
-        fail_out['actual'] = render_value failure.value
+        out << ohsh do |o|
+          o['name'] = failure.name
+          o['status'] = failure.status.to_s
+          o['expected'] = failure.expectation
+          o['actual'] = render_value failure.value
+        end
       end
       out
     end
@@ -203,6 +204,12 @@ module Exemplor
     # yaml doesn't want to print a class
     def render_value(value)
       value.kind_of?(Class) ? value.inspect : value
+    end
+    
+    def ohsh(&blk)
+      ohsh = OrderedHash.new
+      blk[ohsh]
+      ohsh
     end
     
   end

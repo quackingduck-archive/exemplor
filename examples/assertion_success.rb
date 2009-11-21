@@ -7,5 +7,9 @@ end
 
 __END__
 
-(s) Asserting first is first: 
-  (s) list.first: 1
+- name: Asserting first is first
+  status: success
+  result: 
+  - name: list.first
+    status: success
+    result: 1

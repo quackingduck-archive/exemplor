@@ -30,15 +30,39 @@ end
 
 __END__
 
-(I) plain call: 
-  (i) foo: bar
-(I) whitespace after the call (seriously): 
-  (i) foo: bar
-(I) comment after the call: 
-  (i) foo: bar
-(I) with brackets: 
-  (i) String.new('test'): test
-(s) with brackets and is: 
-  (s) String.new('test'): test
-(s) with disambiguation: 
-  (s) foo bar: bar
+- name: plain call
+  status: info (with checks)
+  result: 
+  - name: foo
+    status: info
+    result: bar
+- name: whitespace after the call (seriously)
+  status: info (with checks)
+  result: 
+  - name: foo
+    status: info
+    result: bar
+- name: comment after the call
+  status: info (with checks)
+  result: 
+  - name: foo
+    status: info
+    result: bar
+- name: with brackets
+  status: info (with checks)
+  result: 
+  - name: String.new('test')
+    status: info
+    result: test
+- name: with brackets and is
+  status: success
+  result: 
+  - name: String.new('test')
+    status: success
+    result: test
+- name: with disambiguation
+  status: success
+  result: 
+  - name: foo bar
+    status: success
+    result: bar

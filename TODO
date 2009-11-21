@@ -7,7 +7,4 @@
 # (s) = ✓
 # (f) = ✗
 # (e) = ☠
-* Change non-tty output to:
-  - name: some test name
-    status: OK (no checks)
-    result: output
+* smarter macros for examples.rb - this could be clearer

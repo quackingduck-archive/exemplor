@@ -7,7 +7,10 @@ end
 
 __END__
 
-(f) Assertion failure: 
-  (f) list.first: 
+- name: Assertion failure
+  status: failure
+  result: 
+  - name: list.first
+    status: failure
     expected: 2
     actual: 1

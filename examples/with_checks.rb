@@ -9,7 +9,15 @@ end
 
 __END__
 
-(I) Accessing different parts of an array: 
-  (i) list.first: 1
-  (i) list[1]: 2
-  (i) list.last: 3
+- name: Accessing different parts of an array
+  status: info (with checks)
+  result: 
+  - name: list.first
+    status: info
+    result: 1
+  - name: list[1]
+    status: info
+    result: 2
+  - name: list.last
+    status: info
+    result: 3

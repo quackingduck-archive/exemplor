@@ -10,9 +10,16 @@ end
 
 __END__
 
-(f) Some successes, then a fail: 
-  (s) list.first: 1
-  (s) list[1]: 2
-  (f) list.last: 
+- name: Some successes, then a fail
+  status: failure
+  result: 
+  - name: list.first
+    status: success
+    result: 1
+  - name: list[1]
+    status: success
+    result: 2
+  - name: list.last
+    status: failure
     expected: 1
     actual: 3

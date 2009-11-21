@@ -6,4 +6,6 @@ end
 
 __END__
 
-(i) An example block without any checks prints the value of the block: foo
+- name: An example block without any checks prints the value of the block
+  status: info (no checks)
+  result: foo

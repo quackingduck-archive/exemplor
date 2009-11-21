@@ -12,5 +12,7 @@ end
 
 __END__
 
-(i) Non-string return values get converted to yaml: !ruby/object:MyClass 
-  foo: bar
+- name: Non-string return values get converted to yaml
+  status: info (no checks)
+  result: !ruby/object:MyClass 
+    foo: bar

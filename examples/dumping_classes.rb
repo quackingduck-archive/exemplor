@@ -10,6 +10,12 @@ end
 
 __END__
 
-(i) class name is printed when example returns a class: Object
-(I) class name is printed when check is given a class: 
-  (i) Object: Object
+- name: class name is printed when example returns a class
+  status: info (no checks)
+  result: Object
+- name: class name is printed when check is given a class
+  status: info (with checks)
+  result: 
+  - name: Object
+    status: info
+    result: Object

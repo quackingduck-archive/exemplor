@@ -9,6 +9,12 @@ end
 
 __END__
 
-(I) Array appending: 
-  (i) list.last before append: 42
-  (i) list.last after append: 2
+- name: Array appending
+  status: info (with checks)
+  result: 
+  - name: list.last before append
+    status: info
+    result: 42
+  - name: list.last after append
+    status: info
+    result: 2

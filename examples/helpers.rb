@@ -14,4 +14,6 @@ end
 
 __END__
 
-(i) Example calling helper: foo
+- name: Example calling helper
+  status: info (no checks)
+  result: foo

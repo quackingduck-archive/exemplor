@@ -13,7 +13,15 @@ end
 
 __END__
 
-(s) Modified env: 
-  (s) @str: foo bar
-(s) Unmodified env: 
-  (s) @str: foo
+- name: Modified env
+  status: success
+  result: 
+  - name: "@str"
+    status: success
+    result: foo bar
+- name: Unmodified env
+  status: success
+  result: 
+  - name: "@str"
+    status: success
+    result: foo

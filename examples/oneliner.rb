@@ -4,4 +4,6 @@ eg { 1+2 }
 
 __END__
 
-(i) 1+2: 3
+- name: 1+2
+  status: info (no checks)
+  result: 3
