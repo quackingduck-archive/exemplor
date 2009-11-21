@@ -1,10 +1,4 @@
+* add symbol to_proc and tap
 * exemplor executable that can run multiple example files
-* #teardown
-* Use fancy unicode characters for tests status:
 * TextMate bundle that does nice cmd+r output
-# (i) = ∙
-# (I) = •
-# (s) = ✓
-# (f) = ✗
-# (e) = ☠
 * smarter macros for examples.rb - this could be clearer
