@@ -93,12 +93,12 @@ module Exemplor
       # •∙ are inverted in my terminal font (Incosolata) so I'm swapping them
       require 'term/ansicolor'
       case status
-      when :info : blue "• #{name}\n" + YAML.without_header(result).indent
+      when :info : blue format_info("• #{name}", result)
       when :infos
         formatted_result = result.map do |r|
-          "• #{r['name']}\n" + YAML.without_header(r['result']).indent
+          format_info("• #{r['name']}", r['result']).rstrip
         end.join("\n")
-        blue("∙ #{name}\n" + formatted_result.indent)
+        blue("∙ #{name}\n#{formatted_result.indent}")
       when :success
         green("✓ #{name}")
       when :failure
@@ -120,6 +120,11 @@ module Exemplor
     
     def color(color, str)
       [Term::ANSIColor.send(color), str, Term::ANSIColor.reset].join
+    end
+    
+    # whatahack
+    def format_info(str, result)
+      YAML.without_header({'FANCY' => result}).sub('FANCY', str)
     end
     
   end
