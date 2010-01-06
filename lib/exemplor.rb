@@ -280,8 +280,8 @@ end
 # Examples.examples ordered hash, the key is the name, the body is the example
 # code
 def eg(name = nil, &example)
-  Exemplor.extract_example_file caller # only runs once
   return Exemplor::ExampleEnv if name.nil? && example.nil?
+  Exemplor.extract_example_file caller # only runs once
   if name.nil?
      file, line_number = caller.first.match(/^(.+):(\d+)/).captures
      line = File.readlines(file)[line_number.to_i - 1].strip
