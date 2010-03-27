@@ -6,17 +6,17 @@ require 'exemplor'
 eg.helpers do
 
   def run_example(name, args = nil)
-    `ruby -Ilib examples/#{name}.rb#{' ' + args if args}`
+    `ruby -rubygems -Ilib examples/#{name}.rb#{' ' + args if args}`
   end
 
   def extract_expected(name)
     File.read("examples/#{name}.rb").split('__END__').last
   end
-  
+
   def expected_and_actual(example_name)
     [extract_expected(example_name).strip, run_example(example_name).strip]
   end
-  
+
   def check_output_matches_expected_for(example_name)
     expected_output, output = expected_and_actual(example_name)
     Check(output).is(expected_output)
@@ -25,7 +25,7 @@ eg.helpers do
 end
 
 eg "version matches file" do
-  version = `ruby -Ilib -e "require 'exemplor' ; print Exemplor.version"`
+  version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
   Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
 end
 

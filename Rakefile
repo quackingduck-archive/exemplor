@@ -17,7 +17,7 @@ rescue LoadError
 end
 
 task :examples do
-  ruby "examples.rb"
+  ruby  "-rubygems", "examples.rb"
 end
 
 task :test => :examples
