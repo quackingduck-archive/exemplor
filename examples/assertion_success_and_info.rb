@@ -10,8 +10,8 @@ end
 
 __END__
 
-- name: Some successes, then a fail
-  status: failure
+- name: Some successes, then an info
+  status: info (with checks)
   result: 
   - name: list.first
     status: success
