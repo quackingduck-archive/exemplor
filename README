@@ -6,20 +6,20 @@ An example-based test framework inspired by [testy](http://github.com/ahoward/te
 Simpler that BDD/TDD, fancier than a file with a bunch of print statements.
 
 Very tiny api. Here it is
-    
+
     eg.helpers do
       ... your helpers ...
     end
-    
+
     eg.setup { ... setup codez ... }
-      
+
     eg "an example" do
       ... example code ...
     end
-    
+
     eg "another example" do
       ... etc ...
-    end                                      
+    end
 
 The output is both human readable and machine parsable, which means you can test your tests.
 
@@ -29,29 +29,29 @@ Writing Examples
 See `examples.rb` and `/examples` for more examples.
 
 The simplest possible example:
-                                
+
     eg 'An example block without any checks prints the value of the block' do
       "foo"
     end
-    
+
     #=>
-    
+
     (i) An example block without any checks prints the value of the block: foo
 
 The 'i' stands for 'info' which means the example ran without error.
 
 Inspecting a few values, by default `Check` prints its argument and the value of the argument:
-                                
+
     eg 'Accessing different parts of an array' do
       list = [1, 2, 3]
       Check(list.first)
       Check(list[1])
       Check(list.last)
     end
-    
+
     #=>
-    
-    (I) Accessing different parts of an array: 
+
+    (I) Accessing different parts of an array:
       (i) list.first: 1
       (i) list[1]: 2
       (i) list.last: 3
@@ -66,31 +66,31 @@ Calls to `Check` with the same argument can be disambiguated with `[]`:
       list << 2
       Check(list.last)["after append"]
     end
-    
+
     #=>
-    
-    (I) Array appending: 
+
+    (I) Array appending:
       (i) list.last before append: 42
       (i) list.last after append: 2
 
 Errors are caught and reported nicely:
-    
+
     eg 'Raising an error' do
-      raise "boom!"    
+      raise "boom!"
     end
 
     #=>
 
-    (e) Raising an error: 
+    (e) Raising an error:
       class: RuntimeError
       message: boom!
-      backtrace: 
+      backtrace:
       - examples/an_error.rb:4
       # ... more backtrace lines
 
 Once you're happy with how your code is running you can make some assertions about its behaviour by adding `is()` calls after your `Check()` statements:
-    
-    
+
+
     eg 'Asserting first is first' do
       list = [1, 2, 3]
       Check(list.first).is(1)
@@ -98,7 +98,7 @@ Once you're happy with how your code is running you can make some assertions abo
 
     #=>
 
-    (s) Asserting first is first: 
+    (s) Asserting first is first:
       (s) list.first: 1
 
 's' stands for 'success' and 'f' for failure:
@@ -110,8 +110,8 @@ Once you're happy with how your code is running you can make some assertions abo
 
     #=>
 
-    (f) Assertion failure: 
-      (f) list.first: 
+    (f) Assertion failure:
+      (f) list.first:
         expected: 2
         actual: 1
 
@@ -138,15 +138,15 @@ Running with `--list` or `-l` lists all examples:
     - called with some other arg (always interpreted as a regex)
 
 Otherwise the first argument is taken as a regex and only examples whose titles match are run:
-    
+
     $> ruby examples.rb called
-    (s) called with --list arg: 
-      (s) list: 
+    (s) called with --list arg:
+      (s) list:
       - Modified env
       - Unmodified env
-    (s) called with --l arg: 
-      (s) list: 
+    (s) called with --l arg:
+      (s) list:
       - Modified env
       - Unmodified env
-    (s) called with some other arg (always interpreted as a regex): 
+    (s) called with some other arg (always interpreted as a regex):
       (s) tests_run: 1
