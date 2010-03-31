@@ -64,4 +64,4 @@ def eg(name = nil, &example)
 end
 
 # Command line interface
-at_exit { Exemplor(ARGV.dup) if Exemplor.run_directly? }
+at_exit { Exemplor(ARGV) if Exemplor.run_directly? }
