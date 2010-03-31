@@ -260,14 +260,25 @@ module Exemplor
       @examples ||= Examples.new
     end
 
-    def extract_example_file(caller_trace)
+    # sets @example_file to first file that calls the `eg` method
+    def set_example_file_from(caller_trace)
       @example_file ||= caller_trace.first.split(":").first
     end
 
-    # attr_reader :example_file
+    def example_file_set?
+      !!@example_file
+    end
 
     def run_directly?
       @example_file == $0
+    end
+
+    def make_example_name_from(caller_trace)
+      file, line_number = caller_trace.first.match(/^(.+):(\d+)/).captures
+      line = File.readlines(file)[line_number.to_i - 1].strip
+      name = line[/^eg\s*\{\s*(.+?)\s*\}$/,1]
+      raise Exemplor::ExampleDefinitionError, "example at #{caller_trace.first} has no name so must be on one line" if name.nil?
+      name
     end
 
   end
@@ -278,16 +289,31 @@ end
 # Examples.examples ordered hash, the key is the name, the body is the example
 # code
 def eg(name = nil, &example)
-  return Exemplor::ExampleEnv if name.nil? && example.nil?
-  Exemplor.extract_example_file caller # only runs once
-  if name.nil?
-     file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-     line = File.readlines(file)[line_number.to_i - 1].strip
-     name = line[/^eg\s*\{\s*(.+?)\s*\}$/,1] if name.nil?
-     raise Exemplor::ExampleDefinitionError, "example at #{caller.first} has no name so must be on one line" if name.nil?
-  end
+  # you call `eg` without args to get access to examples enviornment:
+  #
+  #   eg.setup(&blk)    # set setup block
+  #   eg.helpers(&blk)  # add helper methods
+
+  called_without_args = name.nil? && example.nil?
+  return Exemplor::ExampleEnv if called_without_args
+
+  # the first call that defines an actual example also tells exemplor which
+  # file these examples are defined in
+  Exemplor.set_example_file_from caller unless Exemplor.example_file_set?
+
+  # `eg` can be called without a name if the entire call is on one line, in
+  # that case the code in the example is used as its name:
+  #
+  #   eg { the_duck_swims_in_the_pond }
+  #   same as:
+  #   eg("the_duck_swims_in_the_pond") { the_duck_swims_in_the_pond }
+
+  called_without_explicit_name = name.nil? && !example.nil?
+  name = Exemplor.make_example_name_from caller if called_without_explicit_name
+
   Exemplor.examples.add(name, &example)
 end
+
 
 # Parses the command line args and either runs or lists the examples.
 at_exit do
