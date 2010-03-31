@@ -25,11 +25,12 @@ module Exemplor
 
   class Check
 
-    attr_reader :expectation, :value
+    attr_reader :expectation, :value, :status
 
     def initialize(name, value)
       @name  = name
       @value = value
+      @status = :info
     end
 
     def [](disambiguate)
@@ -43,11 +44,7 @@ module Exemplor
 
     def is(expectation)
       @expectation = expectation
-    end
-
-    def status
-      return :info unless defined? @expectation
-      @value == @expectation ? :success : :failure
+      @status = (value == expectation) ? :success : :failure
     end
 
     def success?
