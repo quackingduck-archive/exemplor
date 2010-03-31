@@ -13,9 +13,8 @@ module Exemplor
       # [status, result, stderr]
       def run(&code)
         env = self.new
-        stderr = StringIO.new
+        stderr = fake_stderr!
         status, result = begin
-          real_stderr = $stderr ; $stderr = stderr # swap stderr
 
           env.instance_eval(&self.setup_block) if self.setup_block
           value = env.instance_eval(&code)
@@ -26,9 +25,22 @@ module Exemplor
         rescue Object => error
           [:error, render_error(error)]
         ensure
-          $stderr = real_stderr # swap stderr back
+          restore_stderr!
         end
         [status, result, stderr.rewind && stderr.read]
+      end
+
+      # tests are run with a fake stderr so warnings output can be assoicated
+      # with the specific test. this is still a little hokey and hard to test
+      # properly
+      def fake_stderr!
+        fake = StringIO.new
+        @real_stderr = $stderr
+        $stderr = fake
+      end
+
+      def restore_stderr!
+        $stderr = @real_stderr
       end
 
       # -- these "render" methods could probably be factored away
