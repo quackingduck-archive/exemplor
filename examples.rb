@@ -46,6 +46,7 @@ eg { check_output_matches_expected_for :assertion_success }
 eg { check_output_matches_expected_for :assertion_failure }
 eg { check_output_matches_expected_for :assertion_success_and_failure }
 eg { check_output_matches_expected_for :assertion_success_and_info }
+eg { check_output_matches_expected_for :failure_halts_execution }
 eg { check_output_matches_expected_for :helpers }
 eg { check_output_matches_expected_for :with_setup }
 eg { check_output_matches_expected_for :checking_nil }

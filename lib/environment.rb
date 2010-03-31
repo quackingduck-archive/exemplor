@@ -18,10 +18,14 @@ module Exemplor
 
           env.instance_eval(&self.setup_block) if self.setup_block
           value = env.instance_eval(&code)
-          result = env._status == :info ?
-            render_value(value) : render_checks(env._checks)
-          [env._status, result]
+          if env._checks.empty?
+            [:info, render_value(value)]
+          else # :infos or :success
+            [env._status, render_checks(env._checks)]
+          end
 
+        rescue Check::Failure => failure
+          [:failure, render_checks(env._checks)]
         rescue Object => error
           [:error, render_error(error)]
         ensure
@@ -99,8 +103,6 @@ module Exemplor
     end
 
     def _status
-      (:info    if _checks.empty?) ||
-      (:failure if _checks.any? { |c| c.failure? }) ||
       (:success if _checks.all? { |c| c.success? }) ||
        :infos
     end

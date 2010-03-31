@@ -18,9 +18,13 @@ module Exemplor
       @name + (defined?(@disambiguate) ? " #{@disambiguate}" : '')
     end
 
+    # might be better to use throw here
+    class Failure < StandardError; end
+
     def is(expectation)
       @expectation = expectation
       @status = (value == expectation) ? :success : :failure
+      raise Failure if failure?
     end
 
     def success?
