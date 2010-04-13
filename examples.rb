@@ -24,6 +24,24 @@ eg.helpers do
 
 end
 
+def run_example(name, args = nil)
+  `ruby -rubygems -Ilib examples/#{name}.rb#{' ' + args if args}`
+end
+
+def expected_output_for name
+  File.read("examples/#{name}.rb").split('__END__').last.strip + "\n"
+end
+
+# a macro that runs an example file and then asserts that the output matches
+# the expected output which is specified after the __END__ in that same file
+def examples *filenames
+  filenames.each do |file|
+    eg("#{file}.rb") { Check(run_example(file)).is expected_output_for(file) }
+  end
+end
+
+examples :simple_show
+
 eg "version matches file" do
   version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
   Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
@@ -37,6 +55,7 @@ eg "errors are caught and nicely displayed" do
   Check(result['result']['backtrace'][0]).is('examples/an_error.rb:4')
 end
 
+eg { check_output_matches_expected_for :simple_show }
 eg { check_output_matches_expected_for :no_checks }
 eg { check_output_matches_expected_for :oneliner }
 eg { check_output_matches_expected_for :no_checks_non_string }
