@@ -5,7 +5,8 @@ require 'exemplor'
 
 eg "Exemplor.version comes from the version file" do
   version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
-  Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
+  version_from_file = File.read(__FILE__.sub('examples.rb','VERSION'))
+  Assert(version == version_from_file)
 end
 
 # runs an example file (in /examples) using the development version of exemplor
@@ -22,7 +23,7 @@ end
 # the expected output which is specified after the __END__ in that same file
 def examples filenames
   filenames.each do |file|
-    eg("#{file}.rb") { Check(run_example(file)).is expected_output_for(file) }
+    eg("#{file}.rb") { Assert(run_example(file) == expected_output_for(file)) }
   end
 end
 
@@ -60,25 +61,25 @@ end
 
 eg "errors are caught and backtraces shown" do
   result = parse_run(:an_error)[0]
-  Check(result['status']).is('error')
-  Check(result['result']['class']).is('RuntimeError')
-  Check(result['result']['message']).is('boom!')
-  Check(result['result']['backtrace'][0]).is('examples/an_error.rb:4')
+  Assert(result['status'] == 'error')
+  Assert(result['result']['class'] == 'RuntimeError')
+  Assert(result['result']['message'] == 'boom!')
+  Assert(result['result']['backtrace'][0] == 'examples/an_error.rb:4')
 end
 
 eg "exit status is percent of issues that failed or errored" do
   run_example :ten_percent_failures
-  Check($?.exitstatus).is(10)
+  Assert($?.exitstatus == 10)
 end
 
 eg "--list shows all the example names in the file" do
-  Check(parse_run(:foobar, '--list')).is(["foo", "bar"])
+  Assert(parse_run(:foobar, '--list') == ["foo", "bar"])
 end
 
 eg "-l is the same as --list" do
-  Check(run_example(:foobar, '-l')).is(run_example(:foobar, '--list'))
+  Assert(run_example(:foobar, '-l') == run_example(:foobar, '--list'))
 end
 
 eg "any other arg is intepreted as a regex and the examples that match it are run" do
-  Check(parse_run(:foobar, 'foo').size).is(1)
+  Assert(parse_run(:foobar, 'foo').size == 1)
 end
