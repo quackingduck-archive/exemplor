@@ -21,4 +21,4 @@ __END__
   result: 
   - name: nil
     status: success
-    result:
+    result: 
