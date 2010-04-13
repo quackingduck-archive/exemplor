@@ -15,6 +15,10 @@ module Exemplor
       @name + (defined?(@disambiguate) ? " #{@disambiguate}" : '')
     end
 
+    def is(arg)
+      warn "Check().is() doesn't assert anymore, use Assert()"
+    end
+
     def success?
       status == :success
     end
@@ -42,10 +46,10 @@ module Exemplor
   class Assert < Check
 
     attr_reader :status
-    
+
     # todo remove
     attr_reader :value
-    
+
     # might be better to use throw here
     class Failure < StandardError; end
 

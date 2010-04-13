@@ -93,22 +93,13 @@ module Exemplor
       @_checks = []
     end
 
-    def Check(value)
-      file, line_number = caller.first.match(/^(.+):(\d+)/).captures
-      line = File.readlines(file)[line_number.to_i - 1].strip
-      name = line[/Check\((.+?)\)\s*($|#|\[|\.is.+)/,1]
-      check = Check.new(name, value)
-      _checks << check
-      check
-    end
-    
     def Show(value)
       name = extract_argstring_from :Show, caller
       check = Show.new(name, value)
       _checks << check
       check
     end
-    
+
     def Assert(value)
       name = extract_argstring_from :Assert, caller
       check = Assert.new(name, value)
@@ -116,7 +107,15 @@ module Exemplor
       check.run
       check
     end
-    
+
+    def Check(value)
+      warn "Check is depreciated, use Show"
+      name = extract_argstring_from :Check, caller
+      check = Show.new(name, value)
+      _checks << check
+      check
+    end
+
     def extract_argstring_from name, call_stack
       file, line_number = call_stack.first.match(/^(.+):(\d+)/).captures
       line = File.readlines(file)[line_number.to_i - 1].strip
