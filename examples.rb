@@ -1,93 +1,77 @@
 # uses the gem version, not the one being tested
 require 'exemplor'
 
-# slow because each test runs in a subshell
-
-eg.helpers do
-
-  def run_example(name, args = nil)
-    `ruby -rubygems -Ilib examples/#{name}.rb#{' ' + args if args}`
-  end
-
-  def extract_expected(name)
-    File.read("examples/#{name}.rb").split('__END__').last
-  end
-
-  def expected_and_actual(example_name)
-    [extract_expected(example_name).strip, run_example(example_name).strip]
-  end
-
-  def check_output_matches_expected_for(example_name)
-    expected_output, output = expected_and_actual(example_name)
-    Check(output).is(expected_output)
-  end
-
+eg "Exemplor.version comes from the version file" do
+  version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
+  Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
 end
 
+# runs an example file (in /examples) using the development version of exemplor
 def run_example(name, args = nil)
   `ruby -rubygems -Ilib examples/#{name}.rb#{' ' + args if args}`
 end
 
+# pulls out text after the __END__ in an example file
 def expected_output_for name
-  File.read("examples/#{name}.rb").split('__END__').last.strip + "\n"
+  File.read("examples/#{name}.rb").split('__END__').last.lstrip + "\n"
 end
 
 # a macro that runs an example file and then asserts that the output matches
 # the expected output which is specified after the __END__ in that same file
-def examples *filenames
+def examples filenames
   filenames.each do |file|
     eg("#{file}.rb") { Check(run_example(file)).is expected_output_for(file) }
   end
 end
 
-examples :simple_show
+# slow because each test runs in a subshell
+examples %w[
+  no_checks
+  oneliner
+  no_checks_non_string
+  with_checks
+  check_with_disambiguation
+  assertion_success
+  assertion_failure
+  assertion_success_and_failure
+  assertion_success_and_info
+  failure_halts_execution
+  helpers
+  with_setup
+  checking_nil
+  dumping_classes
+  check_parsing
+]
 
-eg "version matches file" do
-  version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
-  Check(version).is(File.read(__FILE__.sub('examples.rb','VERSION')))
+eg.helpers do
+  # Exemplor outputs valid yaml, for some of our assertions it's easier to use
+  # the parsed structure
+  def parse_run *args
+    YAML.load(run_example(*args))
+  end
 end
 
-eg "errors are caught and nicely displayed" do
-  result = YAML.load(run_example(:an_error))[0]
+eg "errors are caught and backtraces shown" do
+  result = parse_run(:an_error)[0]
   Check(result['status']).is('error')
   Check(result['result']['class']).is('RuntimeError')
   Check(result['result']['message']).is('boom!')
   Check(result['result']['backtrace'][0]).is('examples/an_error.rb:4')
 end
 
-eg { check_output_matches_expected_for :simple_show }
-eg { check_output_matches_expected_for :no_checks }
-eg { check_output_matches_expected_for :oneliner }
-eg { check_output_matches_expected_for :no_checks_non_string }
-eg { check_output_matches_expected_for :with_checks }
-eg { check_output_matches_expected_for :check_with_disambiguation }
-eg { check_output_matches_expected_for :assertion_success }
-eg { check_output_matches_expected_for :assertion_failure }
-eg { check_output_matches_expected_for :assertion_success_and_failure }
-eg { check_output_matches_expected_for :assertion_success_and_info }
-eg { check_output_matches_expected_for :failure_halts_execution }
-eg { check_output_matches_expected_for :helpers }
-eg { check_output_matches_expected_for :with_setup }
-eg { check_output_matches_expected_for :checking_nil }
-eg { check_output_matches_expected_for :dumping_classes }
-eg { check_output_matches_expected_for :check_parsing }
-
 eg "exit status is percent of issues that failed or errored" do
   run_example :ten_percent_failures
   Check($?.exitstatus).is(10)
 end
 
-eg "called with --list arg" do
-  list = YAML.load(run_example(:with_setup, '--list'))
-  Check(list).is(["Modified env", "Unmodified env"])
+eg "--list shows all the example names in the file" do
+  Check(parse_run(:foobar, '--list')).is(["foo", "bar"])
 end
 
-eg "called with --l arg" do
-  list = YAML.load(run_example(:with_setup, '--list'))
-  Check(list).is(["Modified env", "Unmodified env"])
+eg "-l is the same as --list" do
+  Check(run_example(:foobar, '-l')).is(run_example(:foobar, '--list'))
 end
 
-eg "called with some other arg (always interpreted as a regex)" do
-  tests_run = YAML.load(run_example(:with_setup, 'Unmodified')).size
-  Check(tests_run).is(1)
+eg "any other arg is intepreted as a regex and the examples that match it are run" do
+  Check(parse_run(:foobar, 'foo').size).is(1)
 end
