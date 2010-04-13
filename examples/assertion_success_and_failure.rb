@@ -2,10 +2,10 @@ require 'exemplor'
 
 eg 'Some successes, then a fail' do
   list = [1, 2, 3]
-  Check(list.first).is(1)
-  Check(list[1]).is(2)
-  Check(list.last).is(1) # fail!
-  Check(list[2]).is(3) # would be successful but we never get here
+  Assert(list.first == 1)
+  Assert(list[1] == 2)
+  Assert(list.last == 1) # fail!
+  Assert(list[2] == 3) # would be successful but we never get here
 end
 
 __END__
@@ -13,13 +13,9 @@ __END__
 - name: Some successes, then a fail
   status: failure
   result: 
-  - name: list.first
+  - name: list.first == 1
     status: success
-    result: 1
-  - name: list[1]
+  - name: list[1] == 2
     status: success
-    result: 2
-  - name: list.last
+  - name: list.last == 1
     status: failure
-    expected: 1
-    actual: 3

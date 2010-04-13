@@ -2,7 +2,7 @@ require 'exemplor'
 
 eg 'Assertion failure' do
   list = [1, 2, 3]
-  Check(list.first).is(2)
+  Assert(list.first == 2)
 end
 
 __END__
@@ -10,7 +10,5 @@ __END__
 - name: Assertion failure
   status: failure
   result: 
-  - name: list.first
+  - name: list.first == 2
     status: failure
-    expected: 2
-    actual: 1

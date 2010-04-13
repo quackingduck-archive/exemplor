@@ -1,11 +1,13 @@
 require 'exemplor'
 
+# this is kind of a compromise, looking for better ideas
+
 eg "checking nil works correctly" do
-  Check(nil)
+  Show(nil)
 end
 
 eg "asserting for nil works correctly" do
-  Check(nil).is(nil)
+  Assert(nil == nil)
 end
 
 __END__
@@ -19,6 +21,5 @@ __END__
 - name: asserting for nil works correctly
   status: success
   result: 
-  - name: nil
+  - name: nil == nil
     status: success
-    result: 

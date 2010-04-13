@@ -16,8 +16,14 @@ rescue LoadError
   puts "Install jeweler to build gem"
 end
 
-task :examples do
-  ruby  "-rubygems", "examples.rb"
+desc "runs the examples with the rubygems version of exemplor (you must gem install the gem for this to work)"
+task :examples, [:filter] do |_,args|
+  ruby "-rubygems", "examples.rb", (args.filter || '')
+end
+
+desc "runs the examples with the development version (i.e. the one in this dir) of exemplor"
+task :dev, [:filter] do |_,args|
+  ruby '-rubygems', '-I', 'lib', 'examples.rb', (args.filter || '')
 end
 
 task :test => :examples

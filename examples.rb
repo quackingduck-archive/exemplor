@@ -1,5 +1,7 @@
-# uses the gem version, not the one being tested
 require 'exemplor'
+
+# Each test runs in a subshell, exemplor is tested with exemplor but from
+# a version running in a different process. Exemplor hates unit tests.
 
 eg "Exemplor.version comes from the version file" do
   version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
@@ -24,24 +26,29 @@ def examples filenames
   end
 end
 
-# slow because each test runs in a subshell
 examples %w[
   no_checks
-  oneliner
   no_checks_non_string
-  with_checks
-  check_with_disambiguation
+  
+  simple_show
+  multi_show
+  show_with_disambiguation
+  
   assertion_success
   assertion_failure
   assertion_success_and_failure
   assertion_success_and_info
   failure_halts_execution
+  
   helpers
   with_setup
   checking_nil
-  dumping_classes
+  showing_classes
   check_parsing
 ]
+
+# I never use this guy, candidate for removal
+examples %w[oneliner]
 
 eg.helpers do
   # Exemplor outputs valid yaml, for some of our assertions it's easier to use

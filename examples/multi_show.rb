@@ -2,9 +2,9 @@ require 'exemplor'
 
 eg 'Accessing different parts of an array' do
   list = [1, 2, 3]
-  Check(list.first)
-  Check(list[1])
-  Check(list.last)
+  Show(list.first)
+  Show(list[1])
+  Show(list.last)
 end
 
 __END__

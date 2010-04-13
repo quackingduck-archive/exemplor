@@ -2,10 +2,10 @@ require 'exemplor'
 
 eg 'Some successes, then an info' do
   list = [1, 2, 3]
-  Check(list.first).is(1)
-  Check(list[1]).is(2)
-  Check(list.last) # the info one
-  Check(list[2]).is(3)
+  Assert(list.first ==1)
+  Assert(list[1] == 2)
+  Show(list.last) # the info one
+  Assert(list[2] == 3)
 end
 
 __END__
@@ -13,15 +13,12 @@ __END__
 - name: Some successes, then an info
   status: info (with checks)
   result: 
-  - name: list.first
+  - name: list.first ==1
     status: success
-    result: 1
-  - name: list[1]
+  - name: list[1] == 2
     status: success
-    result: 2
   - name: list.last
     status: info
     result: 3
-  - name: list[2]
+  - name: list[2] == 3
     status: success
-    result: 3

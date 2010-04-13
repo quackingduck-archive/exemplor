@@ -4,11 +4,11 @@ eg.setup { @str = "foo" }
 
 eg 'Modified env' do
   @str << " bar"
-  Check(@str).is("foo bar")
+  Assert(@str == 'foo bar')
 end
 
 eg 'Unmodified env' do
-  Check(@str).is("foo")
+  Assert(@str == 'foo')
 end
 
 __END__
@@ -16,12 +16,10 @@ __END__
 - name: Modified env
   status: success
   result: 
-  - name: "@str"
+  - name: "@str == 'foo bar'"
     status: success
-    result: foo bar
 - name: Unmodified env
   status: success
   result: 
-  - name: "@str"
+  - name: "@str == 'foo'"
     status: success
-    result: foo

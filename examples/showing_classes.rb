@@ -5,7 +5,7 @@ eg "class name is printed when example returns a class" do
 end
 
 eg "class name is printed when check is given a class" do
-  Check(Object)
+  Show(Object)
 end
 
 __END__

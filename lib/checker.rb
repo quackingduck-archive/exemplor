@@ -1,12 +1,9 @@
 module Exemplor
   class Check
 
-    attr_reader :expectation, :value, :status
-
     def initialize(name, value)
       @name  = name
       @value = value
-      @status = :info
     end
 
     def [](disambiguate)
@@ -16,15 +13,6 @@ module Exemplor
 
     def name
       @name + (defined?(@disambiguate) ? " #{@disambiguate}" : '')
-    end
-
-    # might be better to use throw here
-    class Failure < StandardError; end
-
-    def is(expectation)
-      @expectation = expectation
-      @status = (value == expectation) ? :success : :failure
-      raise Failure if failure?
     end
 
     def success?
@@ -40,4 +28,32 @@ module Exemplor
     end
 
   end
+
+  class Show < Check
+
+    attr_reader :value
+
+    def status
+      :info
+    end
+
+  end
+
+  class Assert < Check
+
+    attr_reader :status
+    
+    # todo remove
+    attr_reader :value
+    
+    # might be better to use throw here
+    class Failure < StandardError; end
+
+    def run
+      @status = !!@value ? :success : :failure
+      raise Failure if failure?
+    end
+
+  end
+
 end

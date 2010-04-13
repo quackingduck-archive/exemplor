@@ -2,7 +2,7 @@ require 'exemplor'
 
 eg 'Asserting first is first' do
   list = [1, 2, 3]
-  Check(list.first).is(1)
+  Assert(list.first)
 end
 
 __END__
@@ -12,4 +12,3 @@ __END__
   result: 
   - name: list.first
     status: success
-    result: 1

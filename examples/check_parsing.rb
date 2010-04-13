@@ -5,28 +5,25 @@ eg.helpers do
 end
 
 eg "plain call" do
-  Check(foo)
+  Show(foo)
 end
 
 eg "whitespace after the call (seriously)" do
-  Check(foo) 
+  Show(foo) 
 end
 
 eg "comment after the call" do
-  Check(foo) # comment!
+  Show(foo) # comment!
 end
 
 eg "with brackets" do
-  Check(String.new('test'))
-end
-
-eg "with brackets and is" do
-  Check(String.new('test')).is("test")
+  Show(String.new('test'))
 end
 
 eg "with disambiguation" do
-  Check(foo)['bar'].is('bar')
+  Show(foo)['bar']
 end
+
 
 __END__
 
@@ -54,15 +51,9 @@ __END__
   - name: String.new('test')
     status: info
     result: test
-- name: with brackets and is
-  status: success
-  result: 
-  - name: String.new('test')
-    status: success
-    result: test
 - name: with disambiguation
-  status: success
+  status: info (with checks)
   result: 
   - name: foo bar
-    status: success
+    status: info
     result: bar

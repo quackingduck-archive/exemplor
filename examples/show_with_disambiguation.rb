@@ -2,9 +2,9 @@ require 'exemplor'
 
 eg 'Array appending' do
   list = [1, 42]
-  Check(list.last)["before append"]
+  Show(list.last)["before append"]
   list << 2
-  Check(list.last)["after append"]
+  Show(list.last)["after append"]
 end
 
 __END__

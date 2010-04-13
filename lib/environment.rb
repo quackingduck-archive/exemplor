@@ -24,7 +24,7 @@ module Exemplor
             [env._status, render_checks(env._checks)]
           end
 
-        rescue Check::Failure => failure
+        rescue Assert::Failure => failure
           [:failure, render_checks(env._checks)]
         rescue Object => error
           [:error, render_error(error)]
@@ -63,15 +63,15 @@ module Exemplor
           out << OrderedHash do |o|
             o['name'] = check.name
             o['status'] = check.status.to_s
-            o['result'] = render_value check.value
+            o['result'] = render_value check.value if check.info?
           end
         end
         if failure
           out << OrderedHash do |o|
             o['name'] = failure.name
             o['status'] = failure.status.to_s
-            o['expected'] = failure.expectation
-            o['actual'] = render_value failure.value
+            # o['expected'] = failure.expectation
+            # o['actual'] = render_value(failure.value)
           end
         end
         out
@@ -100,6 +100,29 @@ module Exemplor
       check = Check.new(name, value)
       _checks << check
       check
+    end
+    
+    def Show(value)
+      name = extract_argstring_from :Show, caller
+      check = Show.new(name, value)
+      _checks << check
+      check
+    end
+    
+    def Assert(value)
+      name = extract_argstring_from :Assert, caller
+      check = Assert.new(name, value)
+      _checks << check
+      check.run
+      check
+    end
+    
+    def extract_argstring_from name, call_stack
+      file, line_number = call_stack.first.match(/^(.+):(\d+)/).captures
+      line = File.readlines(file)[line_number.to_i - 1].strip
+      argstring = line[/#{name}\((.+?)\)\s*($|#|\[|\})/,1]
+      raise "unable to extract name for #{name} from #{file} line #{line_number}:\n  #{line}" unless argstring
+      argstring
     end
 
     def _status
