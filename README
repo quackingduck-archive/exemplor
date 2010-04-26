@@ -1,123 +1,137 @@
 Exemplor (the exemplar)
 =======================
 
-An example-based test framework inspired by [testy](http://github.com/ahoward/testy).
+Introduction
+------------
 
-Simpler that BDD/TDD, fancier than a file with a bunch of print statements.
+Exemplor is testing framework for high level integration tests that read like example usage scenarios. It's designed with the minimum possible vocabulary, so you can spend more time writing tests and less time learning the testing framework.
 
-Very tiny api. Here it is
+The ideal user of exemplor is a developer who is writing their program in small pieces, from the highest level of abstraction they have currently implemented.
 
-    eg.helpers do
-      ... your helpers ...
+For example lets say you were writing a command-line utility to delete all those `.DS_store` files the OS X finder generates when it's going about its business.
+
+The approach the current crop of test frameworks encourage is to write a failing test that calls a method on an instance of a class. For example:
+
+    require 'test_framework'
+    require 'my_code'
+    
+    context MyMainClass do
+      
+      setup do
+        # fixture setup
+      end
+            
+      it "deletes .DS_store files" do
+        MyMainClass.new(@fixture_directory).method_that_deletes_files
+        assert(not File(@fixture_directory + '/.DS_store').exist?)
+        assert(File(@fixture_directory + '/other_file.txt').exist?)
+      end
+      
     end
 
-    eg.setup { ... setup codez ... }
+No test framework forces the programmer to start this way. These are just the
+kind of examples that come up in the documentation and the open source
+projects that make use of the frameworks.
+
+There are a number of issues with this style of testing.
+
+  1.  The test file must reference:
+
+      * The main library file `my_code.rb`
+      * The main class `MyMainClass`
+      * The primary internal entry point - initialization of MyMainClass with a directory argument and then a call to `method_that_deletes_files` instance method
+
+      If any of these names change, the test must be updated accordingly.
+
+  2.  There is one compulsory level of nesting in the test file. Even if each file only has one context, all tests must be nested under it.
+
+  3.  If the `assert` calls fail, generally the output of the framework is not sufficient enough to determine the exact cause of failure. This is often partially solved with additional methods (or macros) such as `assert_size`, `should_exist` etc. These methods just increase the amount the user must learn to start effectively using the framework.
+
+  4.  The command-line utility - the stated goal of the program - is not yet under test.
+
+The exemplor approach would be something like:
+
+    require 'exemplor'
+    
+    def run_inside directory
+      system "cd #{directory} && ./path/to/utility"
+    end
+    
+    eg.setup do
+      # fixture setup
+    end
+    
+    eg "deletes .DS_store files" do
+      run_inside @fixture_directory
+      Assert(not File(@fixture_directory + '/.DS_store').exist?)
+      Assert(File(@fixture_directory + '/other_file.txt').exist?)
+    end
+
+This tests the public interface (the command-line interface) of the utility without any information about its internal implementation. All the test knows about is the path to the actual command under test.
+
+This approach to testing allows the developer to write the first implementation without any classes, then refactor to instance methods on a class, then put that class inside a module, then move the library file into a `lib` directory, etc. All while continuing to run the tests that ensure the program works as expected.
+
+Exemplor is not just for command-line utilities. It's for testing the parts of your application that constitute the public interface. In a web app it would be the urls. In a library, it would be the public API. Exemplor can also be used to test your underlying implementation but if you find yourself with a bunch of those tests and nothing that covers the public interface then your doing it wrong.
+
+
+API Overview
+------------
+
+The api is tiny. Here it is
+
+    eg.setup do
+      # run before each example, set instance variables here
+    end
 
     eg "an example" do
-      ... example code ...
+      # example usage of the thing under test
+      Assert(expression_that.should.be(truthy))
+      Show(something_to_inspect)
+    end
+    
+    eg.helpers do
+      # helper methods that need to run the context of an example
     end
 
-    eg "another example" do
-      ... etc ...
-    end
+When run from a terminal, the output optimised for human readability and a high signal-to-noise ratio.
 
-The output is both human readable and machine parsable, which means you can test your tests.
+When standard out points to something other than a terminal, the output is information-rich YAML that can be used for some alternative form of results display.
+
 
 Writing Examples
 ----------------
 
-See `examples.rb` and `/examples` for more examples.
-
 The simplest possible example:
 
-    eg 'An example block without any checks prints the value of the block' do
+    eg 'example without Assert() or Show() calls' do
       "foo"
     end
 
-    #=>
-
-    (i) An example block without any checks prints the value of the block: foo
-
-The 'i' stands for 'info' which means the example ran without error.
-
-Inspecting a few values, by default `Check` prints its argument and the value of the argument:
-
-    eg 'Accessing different parts of an array' do
-      list = [1, 2, 3]
-      Check(list.first)
-      Check(list[1])
-      Check(list.last)
-    end
-
-    #=>
-
-    (I) Accessing different parts of an array:
-      (i) list.first: 1
-      (i) list[1]: 2
-      (i) list.last: 3
-
-The capital 'I' means all checks were 'info' checks.
-
-Calls to `Check` with the same argument can be disambiguated with `[]`:
-
-    eg 'Array appending' do
-      list = [1, 42]
-      Check(list.last)["before append"]
-      list << 2
-      Check(list.last)["after append"]
-    end
-
-    #=>
-
-    (I) Array appending:
-      (i) list.last before append: 42
-      (i) list.last after append: 2
-
-Errors are caught and reported nicely:
-
-    eg 'Raising an error' do
-      raise "boom!"
-    end
-
-    #=>
-
-    (e) Raising an error:
-      class: RuntimeError
-      message: boom!
-      backtrace:
-      - examples/an_error.rb:4
-      # ... more backtrace lines
-
-Once you're happy with how your code is running you can make some assertions about its behaviour by adding `is()` calls after your `Check()` statements:
+Will just print:
+    
+    • example without Assert() or Show() calls: foo
 
 
-    eg 'Asserting first is first' do
-      list = [1, 2, 3]
-      Check(list.first).is(1)
-    end
+### TODO
 
-    #=>
-
-    (s) Asserting first is first:
-      (s) list.first: 1
-
-'s' stands for 'success' and 'f' for failure:
-
-    eg 'Assertion failure' do
-      list = [1, 2, 3]
-      Check(list.first).is(2)
-    end
-
-    #=>
-
-    (f) Assertion failure:
-      (f) list.first:
-        expected: 2
-        actual: 1
+* using Show()
+* using Assert()
+* what happens when an assertion fails
+* what happens when an example raises an error
+* using with rack
+* listing examples
 
 
 Running Examples
 ----------------
+
+Run the example file through ruby
+    
+    $> ruby examples.rb
+
+To run only examples that match the regex "location | setting/x"
+
+    $> ruby examples.rb "location | setting/x"
 
 Running with `--list` or `-l` lists all examples:
 
@@ -137,16 +151,8 @@ Running with `--list` or `-l` lists all examples:
     - called with --l arg
     - called with some other arg (always interpreted as a regex)
 
-Otherwise the first argument is taken as a regex and only examples whose titles match are run:
 
-    $> ruby examples.rb called
-    (s) called with --list arg:
-      (s) list:
-      - Modified env
-      - Unmodified env
-    (s) called with --l arg:
-      (s) list:
-      - Modified env
-      - Unmodified env
-    (s) called with some other arg (always interpreted as a regex):
-      (s) tests_run: 1
+Thanks
+------
+
+Exemplor was inspired by [testy](http://github.com/ahoward/testy).
