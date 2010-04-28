@@ -55,26 +55,13 @@ module Exemplor
       end
 
       def render_checks(checks)
-        failure = nil
-        out = []
-        checks.each do |check|
-          failure = check if check.failure?
-          break if failure
-          out << OrderedHash do |o|
+        checks.map do |check|
+          OrderedHash do |o|
             o['name'] = check.name
             o['status'] = check.status.to_s
             o['result'] = render_value check.value if check.info?
           end
         end
-        if failure
-          out << OrderedHash do |o|
-            o['name'] = failure.name
-            o['status'] = failure.status.to_s
-            # o['expected'] = failure.expectation
-            # o['actual'] = render_value(failure.value)
-          end
-        end
-        out
       end
 
       def render_error(error)
