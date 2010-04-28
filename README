@@ -14,19 +14,19 @@ The approach the current crop of test frameworks encourage is to write a failing
 
     require 'test_framework'
     require 'my_code'
-    
+
     context MyMainClass do
-      
+
       setup do
         # fixture setup
       end
-            
+
       it "deletes .DS_store files" do
         MyMainClass.new(@fixture_directory).method_that_deletes_files
         assert(not File(@fixture_directory + '/.DS_store').exist?)
         assert(File(@fixture_directory + '/other_file.txt').exist?)
       end
-      
+
     end
 
 No test framework forces the programmer to start this way. These are just the
@@ -52,15 +52,15 @@ There are a number of issues with this style of testing.
 The exemplor approach would be something like:
 
     require 'exemplor'
-    
+
     def run_inside directory
       system "cd #{directory} && ./path/to/utility"
     end
-    
+
     eg.setup do
       # fixture setup
     end
-    
+
     eg "deletes .DS_store files" do
       run_inside @fixture_directory
       Assert(not File(@fixture_directory + '/.DS_store').exist?)
@@ -88,14 +88,14 @@ The api is tiny. Here it is
       Assert(expression_that.should.be(truthy))
       Show(something_to_inspect)
     end
-    
+
     eg.helpers do
       # helper methods that need to run the context of an example
     end
 
 When run from a terminal, the output optimised for human readability and a high signal-to-noise ratio.
 
-When standard out points to something other than a terminal, the output is information-rich YAML that can be used for some alternative form of results display.
+When standard out points to something other than a terminal, the output is information-rich YAML.
 
 
 Writing Examples
@@ -108,25 +108,84 @@ The simplest possible example:
     end
 
 Will just print:
-    
+
     • example without Assert() or Show() calls: foo
 
+This is useful for "printf driven development" where you just want to check that your code runs and does something useful. To print more than one value per example you can use the `Show()` method:
 
-### TODO
+    eg 'using Show()' do
+      list = [1, 2, 3]
+      Show(list.last)
+      list << 4
+      Show(list.first)
+      Show(list.last)
+    end
 
-* using Show()
-* using Assert()
-* what happens when an assertion fails
-* what happens when an example raises an error
-* using with rack
-* listing examples
+prints as:
+
+    ∙ Showing the value of some expression
+      • list.first: 1
+    ∙ using Show()
+      • list.last: 3
+      • list.first: 1
+      • list.last: 4
+
+`Show()` is like a fancy `Kernel#puts`, you don't need to worry about distinguishing between different calls like you would with normal `puts`:
+
+    puts "last item: #{item.first.to_yaml}"
+    puts "last item: #{item.last.to_yaml}"
+    # etc.
+
+because `Show()` works out the label from the source code and automatically pretty prints the value as yaml.
+
+Exemplor has only one kind of assertion: `Assert()`. It works like `Show()` in that the label will be read from the source:
+
+    eg 'using Assert()' do
+      list = [1, 2, 3]
+      Show(list.last)
+      Assert(list.last == 3)
+    end
+
+prints:
+
+    ∙ using Assert()
+      • list.last: 3
+      ✓ list.last == 3
+
+If the example contains no `Show()` calls and all the asserts are successful then the entire example is considered successful:
+
+    eg 'using Assert()' do
+      list = [1, 2, 3]
+      Assert(list.first == 1)
+      Assert(list.last == 3)
+    end
+
+prints:
+
+    ✓ using Assert()
+
+If an assertion fails then the name of the test is printed with an ✗ next to it:
+
+    eg 'The second Assert() will fail' do
+      list = [1, 2, 3]
+      Assert(list.first == 1)
+      Assert(list.last == 1)
+    end
+
+prints:
+
+    ✗ The second Assert() will fail
+      ✓ list.first == 1
+      ✗ list.last == 1
+
+Nothing fancy, no "expected" and "actual" values are printed, if you want to inspect those you can just add a `Show()` call before the assert.
 
 
 Running Examples
 ----------------
 
 Run the example file through ruby
-    
+
     $> ruby examples.rb
 
 To run only examples that match the regex "location | setting/x"
