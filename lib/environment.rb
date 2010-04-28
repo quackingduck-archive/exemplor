@@ -1,6 +1,6 @@
 module Exemplor
 
-  class ExampleEnv
+  class Environment
 
     class << self
 
@@ -119,6 +119,6 @@ module Exemplor
   end
 
   def environment
-    ExampleEnv
+    Environment
   end
 end
