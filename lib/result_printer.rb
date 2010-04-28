@@ -25,34 +25,43 @@ module Exemplor
     end
 
     def fancy
-      # •∙ are inverted in my terminal font (Incosolata) so I'm swapping them
       require 'term/ansicolor'
       case status
-      when :info : blue format_info("• #{name}", result)
-      when :infos
-        formatted_result = result.map do |r|
-          # TODO: successful ones should be green
-          format_info("#{{'success' => '✓', 'info' => '•' }[r['status']]} #{r['name']}", r['result']).rstrip
-        end.join("\n")
-        blue("∙ #{name}\n#{formatted_result.indent}")
-      when :success
-        green("✓ #{name}")
-      when :failure
-        # sooo hacky
-        failure = result.find { |r| r['status'] == 'failure' }
-        out = failure.dup
-        out.delete('status')
-        out.delete('name')
-        color(:red,  "✗ #{name} - #{failure['name']}\n#{YAML.without_header(out).indent}")
+      when :info    : blue  format_info(name, result)
+      when :success : green icon(status) + ' ' + name
+      when :infos   : blue  icon(status) + ' ' + name + "\n" + fancy_result(result).indent
+      when :failure : red   icon(status) + ' ' + name + "\n" + fancy_result(result).indent
       when :error
         class_and_message = "#{result['class']} - #{result['message']}"
         backtrace = result['backtrace'].join("\n")
-        color(:red, "☠ #{name}\n#{class_and_message.indent}\n#{backtrace.indent}")
+        red icon(status) + ' ' + name + "\n" + class_and_message.indent + "\n" + backtrace.indent
       end
     end
 
-    def blue(str) color(:blue,str) end
+    def fancy_result(checks)
+      result.map do |r|
+        status, name, result = r['status'].to_sym, r['name'], r['result']
+        case status
+        when :success : green icon(status) + ' ' + name
+        when :failure : red   icon(status) + ' ' + name
+        when :info    : blue  format_info(name, result)
+        end
+      end.join("\n")
+    end
+
+    def icon(status)
+      case status.to_sym
+      when :info    : '•'
+      when :infos   : '∙'
+      when :failure : '✗'
+      when :success : '✓'
+      when :error   : '☠' # skull and crossbone, aww yeah
+      end
+    end
+
+    def blue(str)  color(:blue,str)  end
     def green(str) color(:green,str) end
+    def red(str)   color(:red,str)   end
 
     def color(color, str)
       [Term::ANSIColor.send(color), str, Term::ANSIColor.reset].join
@@ -60,7 +69,7 @@ module Exemplor
 
     # whatahack
     def format_info(str, result)
-      YAML.without_header({'FANCY' => result}).sub('FANCY', str)
+      YAML.without_header({'FANCY' => result}).sub('FANCY', icon(:info) + ' ' + str).rstrip
     end
 
   end
