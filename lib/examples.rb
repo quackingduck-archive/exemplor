@@ -30,6 +30,7 @@ module Exemplor
   class Examples
 
     def initialize
+      # TODO: no OrderedHash here
       @examples = OrderedHash.new
     end
 
