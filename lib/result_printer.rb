@@ -51,6 +51,7 @@ module Exemplor
 
     def icon(status)
       case status.to_sym
+      # in some font faces, the big dot is little and the little dot is big. sadness
       when :info    : '•'
       when :infos   : '∙'
       when :failure : '✗'
