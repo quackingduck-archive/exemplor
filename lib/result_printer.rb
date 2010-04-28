@@ -1,4 +1,13 @@
 module Exemplor
+
+  # todo: remove this dependency at some point
+  def self.load_ansicolor
+    @aniscolor_loaded ||= begin
+      $:.unshift Exemplor.path('/../vendor/term-ansicolor-1.0.5/lib')
+      require 'term/ansicolor'
+    end
+  end
+
   class ResultPrinter
 
     attr_reader :name,:status,:result,:stderr
@@ -25,7 +34,7 @@ module Exemplor
     end
 
     def fancy
-      require 'term/ansicolor'
+      Exemplor.load_ansicolor
       case status
       when :info    : blue  format_info(name, result)
       when :success : green icon(status) + ' ' + name

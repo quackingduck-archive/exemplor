@@ -4,14 +4,14 @@ require 'exemplor'
 # a version running in a different process. Exemplor hates unit tests.
 
 eg "Exemplor.version comes from the version file" do
-  version = `ruby -rubygems -Ilib -e "require 'exemplor' ; print Exemplor.version"`
+  version = `ruby -Ilib -e "require 'exemplor' ; print Exemplor.version"`
   version_from_file = File.read(__FILE__.sub('examples.rb','VERSION'))
   Assert(version == version_from_file)
 end
 
 # runs an example file (in /examples) using the development version of exemplor
 def run_example(name, args = nil)
-  `ruby -rubygems -Ilib examples/#{name}.rb#{' ' + args if args}`
+  `ruby -Ilib examples/#{name}.rb#{' ' + args if args}`
 end
 
 # pulls out text after the __END__ in an example file
@@ -30,17 +30,17 @@ end
 examples %w[
   no_checks
   no_checks_non_string
-  
+
   simple_show
   multi_show
   show_with_disambiguation
-  
+
   assertion_success
   assertion_failure
   assertion_success_and_failure
   assertion_success_and_info
   failure_halts_execution
-  
+
   helpers
   with_setup
   checking_nil

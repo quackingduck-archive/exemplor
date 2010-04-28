@@ -45,7 +45,7 @@ module Exemplor
       examples_to_run = @examples.select { |name,_| name =~ patterns }
       return 0 if examples_to_run.empty?
       examples_to_run.each do |name, code|
-        result = ResultPrinter.new(name, *ExampleEnv.run(&code))
+        result = ResultPrinter.new(name, *Environment.run(&code))
         fails +=1 if result.failure?
         puts($stdout.tty? ? result.fancy : result.yaml)
       end

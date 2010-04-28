@@ -1,6 +1,5 @@
 # -- Implementation
 
-require 'orderedhash'
 require 'yaml'
 
 module Exemplor
@@ -16,6 +15,8 @@ module Exemplor
   end
 
 end
+
+require Exemplor.path('/../vendor/orderedhash-0.0.6/lib/orderedhash')
 
 require Exemplor.path('/ext')
 require Exemplor.path('/checker')
