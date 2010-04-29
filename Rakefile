@@ -8,8 +8,6 @@ begin
     gs.summary  = "A light-weight, low-fi way to provide executable usage examples of your code."
     gs.email    = "myles@myles.id.au"
     gs.authors  = ["Myles Byrne"]
-    gs.add_dependency('orderedhash', '>= 0.0.6')
-    gs.add_dependency('term-ansicolor', '>= 1.0.3')
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
