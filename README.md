@@ -215,3 +215,7 @@ Thanks
 ------
 
 Exemplor was inspired by [testy](http://github.com/ahoward/testy).
+
+What really kicked me over the line to this style of testing and eventually lead to writing exemplor was Yehuda Katz's "Writing Code That Doesn't Suck" presentation at RubyConf 2008. I wasn't there but luckily an excellent video of the presentation is available online[1]. If none of this readme made any sense to you or you have additional questions/concerns I strongly recommend watching that presentation.
+
+[1] http://rubyconf2008.confreaks.com/writing-code-that-doesnt-suck.html
