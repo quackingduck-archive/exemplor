@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Exemplor
 
   # todo: remove this dependency at some point
@@ -24,8 +25,8 @@ module Exemplor
       hsh = OrderedHash do |o|
         o['name'] = self.name
         o['status'] = case status = self.status
-          when :info  : 'info (no checks)'
-          when :infos : 'info (with checks)'
+          when :info  then 'info (no checks)'
+          when :infos then 'info (with checks)'
           else ; status.to_s
         end
         o['result'] = self.result
@@ -36,10 +37,10 @@ module Exemplor
     def fancy
       Exemplor.load_ansicolor
       case status
-      when :info    : blue  format_info(name, result)
-      when :success : green icon(status) + ' ' + name
-      when :infos   : blue  icon(status) + ' ' + name + "\n" + fancy_result(result).indent
-      when :failure : red   icon(status) + ' ' + name + "\n" + fancy_result(result).indent
+      when :info    then blue  format_info(name, result)
+      when :success then green icon(status) + ' ' + name
+      when :infos   then blue  icon(status) + ' ' + name + "\n" + fancy_result(result).indent
+      when :failure then red   icon(status) + ' ' + name + "\n" + fancy_result(result).indent
       when :error
         class_and_message = "#{result['class']} - #{result['message']}"
         backtrace = result['backtrace'].join("\n")
@@ -51,9 +52,9 @@ module Exemplor
       result.map do |r|
         status, name, result = r['status'].to_sym, r['name'], r['result']
         case status
-        when :success : green icon(status) + ' ' + name
-        when :failure : red   icon(status) + ' ' + name
-        when :info    : blue  format_info(name, result)
+        when :success then green icon(status) + ' ' + name
+        when :failure then red   icon(status) + ' ' + name
+        when :info    then blue  format_info(name, result)
         end
       end.join("\n")
     end
@@ -61,11 +62,11 @@ module Exemplor
     def icon(status)
       case status.to_sym
       # in some font faces, the big dot is little and the little dot is big. sadness
-      when :info    : '•'
-      when :infos   : '∙'
-      when :failure : '✗'
-      when :success : '✓'
-      when :error   : '☠' # skull and crossbone, aww yeah
+      when :info    then '•'
+      when :infos   then '∙'
+      when :failure then '✗'
+      when :success then '✓'
+      when :error   then '☠' # skull and crossbone, aww yeah
       end
     end
 
