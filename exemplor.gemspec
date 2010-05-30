@@ -41,6 +41,7 @@ Gem::Specification.new do |s|
      "examples/simple_show.rb",
      "examples/ten_percent_failures.rb",
      "examples/with_setup.rb",
+     "exemplor.gemspec",
      "lib/checker.rb",
      "lib/command.rb",
      "lib/environment.rb",
@@ -72,7 +73,6 @@ Gem::Specification.new do |s|
   s.summary = %q{A light-weight, low-fi way to provide executable usage examples of your code.}
   s.test_files = [
     "examples/an_error.rb",
-     "examples/assertion_block.rb",
      "examples/assertion_failure.rb",
      "examples/assertion_success.rb",
      "examples/assertion_success_and_failure.rb",
