@@ -1,4 +1,5 @@
-task :default => [:test]
+task :default => [:examples]
+task :test => :examples
 
 begin
   require 'jeweler'
@@ -21,7 +22,5 @@ end
 
 desc "runs the examples with the development version (i.e. the one in this dir) of exemplor"
 task :dev, [:filter] do |_,args|
-  ruby '-rubygems', '-I', 'lib', 'examples.rb', (args.filter || '')
+  ruby '-I', 'lib', 'examples.rb', (args.filter || '')
 end
-
-task :test => :examples
