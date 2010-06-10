@@ -210,6 +210,19 @@ Running with `--list` or `-l` lists all examples:
     - called with --l arg
     - called with some other arg (always interpreted as a regex)
 
+Testing Rack Apps
+-----------------
+
+Exemplor has built-in support for rack-test. First make sure you have the rack-test gem installed. Then require `exemplor/rack`, then simply call `eg.app` and pass in your rack app:
+
+    hello_app = lambda { [200,{},'oh hai'] }
+
+    eg.app hello_app
+
+    eg "rack support works" do
+      get '/'
+      Assert(last_response.body == 'oh hai')
+    end
 
 Thanks
 ------
