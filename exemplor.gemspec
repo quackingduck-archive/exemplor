@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{exemplor}
-  s.version = "3000.2.0"
+  s.version = "3000.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Myles Byrne"]
-  s.date = %q{2010-05-30}
+  s.date = %q{2010-06-10}
   s.email = %q{myles@myles.id.au}
   s.extra_rdoc_files = [
     "README.md",
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
      "examples/no_checks.rb",
      "examples/no_checks_non_string.rb",
      "examples/oneliner.rb",
+     "examples/rack.rb",
      "examples/show_with_disambiguation.rb",
      "examples/showing_classes.rb",
      "examples/simple_show.rb",
@@ -47,6 +48,7 @@ Gem::Specification.new do |s|
      "lib/environment.rb",
      "lib/examples.rb",
      "lib/exemplor.rb",
+     "lib/exemplor/rack.rb",
      "lib/ext.rb",
      "lib/result_printer.rb",
      "vendor/orderedhash-0.0.6/gemspec.rb",
@@ -86,6 +88,7 @@ Gem::Specification.new do |s|
      "examples/no_checks.rb",
      "examples/no_checks_non_string.rb",
      "examples/oneliner.rb",
+     "examples/rack.rb",
      "examples/show_with_disambiguation.rb",
      "examples/showing_classes.rb",
      "examples/simple_show.rb",
